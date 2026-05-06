@@ -9,28 +9,28 @@ export function Footer() {
           <div className="footer-info">
             <h3 className="footer-logo">{siteConfig.nameKo}</h3>
             <p className="footer-desc">
-              인터넷신문 등록번호: 서울 아 00000 | 등록일: 2026.01.01
+              JoongAng Ilbo Washington Bureau
             </p>
             <p className="footer-desc">
-              발행인/편집인: 홍길동 | 대표전화: {siteConfig.contact.phone}
+              발행인: 이드림 | 편집국장: 김워싱턴
             </p>
             <p className="footer-desc">
               주소: {siteConfig.contact.address}
             </p>
             <p className="footer-desc">
-              이메일: {siteConfig.contact.email}
+              전화: {siteConfig.contact.phone} | 이메일: {siteConfig.contact.email}
             </p>
           </div>
           <div className="footer-links">
-            <a href="/about">신문사 소개</a>
+            <a href="/about">지사 소개</a>
             <a href="/privacy">개인정보처리방침</a>
             <a href="/terms">이용약관</a>
             <a href="/tip">기사제보</a>
-            <a href="/subscribe">뉴스레터</a>
+            <a href="/advertise">광고문의</a>
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} {siteConfig.nameKo}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {siteConfig.nameKo} (JoongAng Washington). All rights reserved.</p>
         </div>
       </div>
     </footer>

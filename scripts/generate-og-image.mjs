@@ -1,5 +1,5 @@
 /**
- * OG Image Generator for 중앙뉴스
+ * OG Image Generator for 중앙일보 워싱턴
  * Usage: npm run og-image
  * Requires: npm i -D sharp
  */
@@ -37,21 +37,27 @@ const svgImage = `
   <line x1="800" y1="100" x2="800" y2="530" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
 
   <!-- Main Title -->
-  <text x="600" y="260" font-family="sans-serif" font-size="72" font-weight="900"
+  <text x="600" y="240" font-family="sans-serif" font-size="68" font-weight="900"
     fill="#ffffff" text-anchor="middle" letter-spacing="-2">
-    중앙뉴스
+    중앙일보
   </text>
 
-  <!-- Subtitle -->
-  <text x="600" y="330" font-family="sans-serif" font-size="28" font-weight="400"
-    fill="rgba(255,255,255,0.7)" text-anchor="middle">
-    종합 인터넷신문
+  <!-- Sub Title -->
+  <text x="600" y="310" font-family="sans-serif" font-size="36" font-weight="700"
+    fill="#e74c3c" text-anchor="middle">
+    워싱턴지사
   </text>
 
   <!-- Description -->
-  <text x="600" y="400" font-family="sans-serif" font-size="18" font-weight="300"
+  <text x="600" y="380" font-family="sans-serif" font-size="20" font-weight="400"
+    fill="rgba(255,255,255,0.7)" text-anchor="middle">
+    JoongAng Ilbo Washington Bureau
+  </text>
+
+  <!-- Tagline -->
+  <text x="600" y="430" font-family="sans-serif" font-size="16" font-weight="300"
     fill="rgba(255,255,255,0.5)" text-anchor="middle">
-    신뢰할 수 있는 뉴스, 빠르고 정확한 보도
+    미주 한인사회의 신뢰받는 뉴스
   </text>
 
   <!-- URL -->
@@ -72,7 +78,7 @@ async function generateOgImage() {
       .png()
       .toFile(outputPath);
 
-    console.log(`✓ OG image generated: ${outputPath}`);
+    console.log(`OG image generated: ${outputPath}`);
     console.log(`  Size: ${WIDTH}x${HEIGHT}px`);
     console.log(`  URL: https://joongang.dreamitbiz.com/og-image.png`);
   } catch (error) {
