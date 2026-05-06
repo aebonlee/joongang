@@ -61,7 +61,7 @@ export function AdminSidebar() {
     <aside className="admin-sidebar">
       <div className="sidebar-header">
         <Link to="/admin" className="sidebar-logo">
-          <span className="logo-text">중앙뉴스</span>
+          <img src="/logo_thejoongang.png" alt="중앙일보" className="sidebar-logo-img" />
           <span className="logo-sub">관리자</span>
         </Link>
       </div>

@@ -23,6 +23,12 @@
   gap: 8px;
 }
 
+.sidebar-logo-img {
+  height: 24px;
+  width: auto;
+  filter: brightness(0) invert(1);
+}
+
 .logo-text {
   font-size: 20px;
   font-weight: 800;
