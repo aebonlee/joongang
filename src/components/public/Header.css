@@ -1,0 +1,130 @@
+.site-header {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Top bar */
+.header-topbar {
+  background: var(--primary);
+  color: #ccc;
+  font-size: var(--font-size-xs);
+  padding: 6px 0;
+}
+
+.header-date {
+  color: #aaa;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.header-link {
+  color: #ccc;
+  font-size: var(--font-size-xs);
+  transition: color 0.2s;
+}
+
+.header-link:hover {
+  color: #fff;
+}
+
+/* Logo area */
+.header-logo-area {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.header-logo h1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 900;
+  color: var(--news-blue);
+  letter-spacing: -1px;
+}
+
+.header-logo:hover h1 {
+  color: var(--news-blue);
+}
+
+.header-search {
+  display: flex;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.header-search input {
+  border: none;
+  outline: none;
+  padding: 8px 14px;
+  width: 240px;
+  font-size: var(--font-size-sm);
+}
+
+.header-search button {
+  background: var(--news-blue);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.header-search button:hover {
+  background: var(--primary);
+}
+
+/* Navigation */
+.header-nav {
+  background: var(--news-blue);
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+}
+
+.nav-item a {
+  display: block;
+  padding: 12px 18px;
+  color: #fff;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.nav-item a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.mobile-menu-btn {
+  color: #fff;
+  padding: 12px;
+  font-size: var(--font-size-base);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .header-search {
+    display: none;
+  }
+
+  .header-logo h1 {
+    font-size: var(--font-size-xl);
+  }
+
+  .nav-list {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nav-list.open {
+    display: flex;
+  }
+
+  .nav-item a {
+    padding: 14px 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}

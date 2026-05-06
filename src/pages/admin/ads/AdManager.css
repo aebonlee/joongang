@@ -1,0 +1,48 @@
+.ad-manager {
+  max-width: 1200px;
+}
+
+.ad-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ad-form {
+  margin-bottom: 20px;
+}
+
+.ad-form h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.ad-preview {
+  margin-top: 12px;
+}
+
+.ad-preview img {
+  max-width: 400px;
+  max-height: 150px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .ad-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
