@@ -52,7 +52,7 @@ export default function ArticleEditor() {
   const [selectedPositions, setSelectedPositions] = useState<PositionType[]>([]);
 
   // Status
-  const [status, setStatus] = useState<'draft' | 'pending' | 'published'>('draft');
+  const [status, setStatus] = useState<'draft' | 'pending' | 'published' | 'scheduled'>('draft');
   const [scheduledAt, setScheduledAt] = useState('');
   const [saving, setSaving] = useState(false);
 
