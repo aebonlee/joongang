@@ -12,10 +12,26 @@ const menuItems = [
   {
     group: '뉴스관리',
     items: [
-      { path: '/admin/articles', label: '기사 목록', icon: '📰' },
-      { path: '/admin/articles/write', label: '기사 등록', icon: '✏️' },
-      { path: '/admin/articles/pending', label: '출력대기', icon: '⏳' },
-      { path: '/admin/articles/comments', label: '댓글 관리', icon: '💬' },
+      { path: '/admin/articles', label: '뉴스관리', icon: '📰' },
+      { path: '/admin/articles/write', label: '뉴스등록', icon: '✏️' },
+      { path: '/admin/articles/pending', label: '출력대기 뉴스', icon: '⏳' },
+      { path: '/admin/articles/photo', label: '포토 뉴스관리', icon: '📷' },
+      { path: '/admin/articles/video', label: '동영상 뉴스관리', icon: '🎬' },
+    ],
+  },
+  {
+    group: '뉴스레터',
+    items: [
+      { path: '/admin/newsletter', label: '뉴스레터 신청 관리', icon: '📧' },
+    ],
+  },
+  {
+    group: '콘텐츠',
+    items: [
+      { path: '/admin/tips', label: '기사제보 관리', icon: '💡' },
+      { path: '/admin/comments', label: '뉴스댓글 관리', icon: '💬' },
+      { path: '/admin/press-release', label: '보도기사 제공', icon: '📤' },
+      { path: '/admin/newswire', label: '뉴스와이어 제공', icon: '🔗' },
     ],
   },
   {
