@@ -8,7 +8,7 @@ export const siteConfig = {
   logo: '/logo.svg',
   ogImage: '/og-image.png',
   contact: {
-    email: 'washington@joongang.dreamitbiz.com',
+    email: 'contact@dckoreadaily.com',
     phone: '202-000-0000',
     address: 'Washington, D.C., USA',
   },

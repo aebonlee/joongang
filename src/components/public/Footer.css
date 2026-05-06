@@ -2,7 +2,7 @@
   background: #1B1B1B;
   color: #aaa;
   padding: 40px 0 20px;
-  margin-top: 60px;
+  margin-top: auto;
   border-top: 3px solid var(--brand-red);
 }
 

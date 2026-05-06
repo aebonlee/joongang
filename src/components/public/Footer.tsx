@@ -9,10 +9,10 @@ export function Footer() {
           <div className="footer-info">
             <img src="/logo_thejoongang.png" alt="중앙일보 워싱턴" className="footer-logo-img" />
             <p className="footer-desc">
-              JoongAng Ilbo Washington Bureau
+              JoongAng Ilbo Washington DC, Inc.
             </p>
             <p className="footer-desc">
-              발행인: 이드림 | 편집국장: 김워싱턴
+              발행인: 류태호 | 편집국장: 김옥채
             </p>
             <p className="footer-desc">
               주소: {siteConfig.contact.address}
@@ -30,7 +30,7 @@ export function Footer() {
           </div>
         </div>
         <div className="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} {siteConfig.nameKo} (JoongAng Washington). All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} JoongAng Ilbo Washington DC, Inc. All rights reserved.</p>
         </div>
       </div>
     </footer>
