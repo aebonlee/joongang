@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
-import { siteConfig } from '@/config/site';
 import type { Section } from '@/types';
 import './Header.css';
 
@@ -71,7 +70,7 @@ export function Header() {
       <div className="header-logo-area">
         <div className="container flex items-center justify-between">
           <Link to="/" className="header-logo">
-            <h1>{siteConfig.nameKo}</h1>
+            <img src="/logo.svg" alt="중앙일보 워싱턴" className="header-logo-img" />
           </Link>
           <form className="header-search" onSubmit={handleSearch}>
             <input

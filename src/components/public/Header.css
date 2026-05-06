@@ -40,15 +40,13 @@
   border-bottom: 1px solid var(--border-light);
 }
 
-.header-logo h1 {
-  font-size: var(--font-size-3xl);
-  font-weight: 900;
-  color: var(--brand-red);
-  letter-spacing: -1px;
+.header-logo-img {
+  height: 36px;
+  width: auto;
 }
 
-.header-logo:hover h1 {
-  color: var(--brand-red-dark);
+.header-logo:hover {
+  opacity: 0.85;
 }
 
 .header-search {
