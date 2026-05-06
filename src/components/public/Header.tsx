@@ -70,7 +70,7 @@ export function Header() {
       <div className="header-logo-area">
         <div className="container flex items-center justify-between">
           <Link to="/" className="header-logo">
-            <img src="/logo.svg" alt="중앙일보 워싱턴" className="header-logo-img" />
+            <img src="/logo_thejoongang.png" alt="중앙일보 워싱턴" className="header-logo-img" />
           </Link>
           <form className="header-search" onSubmit={handleSearch}>
             <input
