@@ -7,7 +7,7 @@ export function Footer() {
       <div className="container">
         <div className="footer-content">
           <div className="footer-info">
-            <h3 className="footer-logo">{siteConfig.nameKo}</h3>
+            <img src="/logo_thejoongang.png" alt="중앙일보 워싱턴" className="footer-logo-img" />
             <p className="footer-desc">
               JoongAng Ilbo Washington Bureau
             </p>
