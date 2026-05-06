@@ -117,7 +117,7 @@ export default function ArticlePage() {
             <div className="article-detail-meta">
               <div className="meta-left">
                 {article.author_name && (
-                  <span className="meta-author">{article.author_name} 기자</span>
+                  <span className="meta-author">{article.author_name}{article.author_name.endsWith('기자') ? '' : ' 기자'}</span>
                 )}
                 {article.author_email && (
                   <span className="meta-email">{article.author_email}</span>
@@ -181,7 +181,7 @@ export default function ArticlePage() {
           {article.author_name && (
             <div className="author-box">
               <div className="author-info">
-                <strong>{article.author_name} 기자</strong>
+                <strong>{article.author_name}{article.author_name.endsWith('기자') ? '' : ' 기자'}</strong>
                 {article.author_email && <span>{article.author_email}</span>}
               </div>
             </div>
