@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { AdBanner } from '@/components/public/AdBanner';
 import type { Article, Section } from '@/types';
 import './SectionPage.css';
 
@@ -99,6 +100,9 @@ export default function SectionPage() {
             </nav>
           )}
         </div>
+
+        {/* 섹션 상단 배너 */}
+        <AdBanner slotCode="pc_section_top" className="ad-banner-top ad-banner-pc" />
 
         <div className="section-content">
           <div className="article-list">

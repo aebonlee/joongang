@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { AdBanner } from '@/components/public/AdBanner';
 import type { Article } from '@/types';
 import './ArticlePage.css';
 
@@ -102,6 +103,10 @@ export default function ArticlePage() {
   return (
     <div className="article-page">
       <div className="container">
+        {/* 기사 상단 배너 */}
+        <AdBanner slotCode="pc_article_top" className="ad-banner-top ad-banner-pc" />
+        <AdBanner slotCode="mobile_article_top" className="ad-banner-top ad-banner-mobile" />
+
         <article className="article-detail">
           {/* Article Header */}
           <header className="article-header">
@@ -152,6 +157,9 @@ export default function ArticlePage() {
             </div>
           )}
 
+          {/* 기사 중간 배너 */}
+          <AdBanner slotCode="pc_article_mid" className="ad-banner-mid ad-banner-pc" />
+
           {/* Content */}
           <div
             className="article-body"
@@ -178,6 +186,10 @@ export default function ArticlePage() {
               </div>
             </div>
           )}
+
+          {/* 기사 하단 배너 */}
+          <AdBanner slotCode="pc_article_bottom" className="ad-banner-bottom ad-banner-pc" />
+          <AdBanner slotCode="mobile_article_bottom" className="ad-banner-bottom ad-banner-mobile" />
 
           {/* Related articles */}
           {relatedArticles.length > 0 && (

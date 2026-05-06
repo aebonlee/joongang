@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { AdBanner } from '@/components/public/AdBanner';
 import type { Article } from '@/types';
 import './HomePage.css';
 
@@ -77,6 +78,11 @@ export default function HomePage() {
   return (
     <div className="home-page">
       <div className="container">
+        {/* PC 메인 상단 배너 */}
+        <AdBanner slotCode="pc_main_top" className="ad-banner-top ad-banner-pc" />
+        {/* 모바일 메인 상단 배너 */}
+        <AdBanner slotCode="mobile_main_top" className="ad-banner-top ad-banner-mobile" />
+
         {/* Headline */}
         {headline[0] && (
           <section className="home-headline">
@@ -126,6 +132,11 @@ export default function HomePage() {
               </div>
             </section>
 
+            {/* PC 메인 중앙 배너 */}
+            <AdBanner slotCode="pc_main_mid" className="ad-banner-mid ad-banner-pc" />
+            {/* 모바일 메인 중간 */}
+            <AdBanner slotCode="mobile_main_mid" className="ad-banner-mid ad-banner-mobile" />
+
             {/* Latest News */}
             <section className="home-section">
               <h3 className="section-title">최신뉴스</h3>
@@ -144,6 +155,9 @@ export default function HomePage() {
 
           {/* Sidebar */}
           <aside className="home-sidebar hide-mobile">
+            {/* PC 사이드바 상단 배너 */}
+            <AdBanner slotCode="pc_main_side_1" className="ad-banner-sidebar" />
+
             {/* Photo News */}
             <section className="home-section">
               <h3 className="section-title">포토뉴스</h3>
@@ -162,6 +176,9 @@ export default function HomePage() {
                 ))}
               </div>
             </section>
+
+            {/* PC 사이드바 중간 배너 */}
+            <AdBanner slotCode="pc_main_side_2" className="ad-banner-sidebar" />
 
             {/* Popular articles placeholder */}
             <section className="home-section">
