@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { supabase } from '@/lib/supabase';
 import type { Section } from '@/types';
 import './Header.css';
@@ -13,6 +14,7 @@ interface WeatherData {
 
 export function Header() {
   const { user, staff, signOut } = useAuth();
+  const { language, toggleLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const [sections, setSections] = useState<Section[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -50,20 +52,21 @@ export function Header() {
         setWeather({ temp, desc, icon });
       }
     } catch {
-      // 날씨 로드 실패 시 무시
+      // ignore weather load failure
     }
   }
 
   function weatherInfo(code: number): { desc: string; icon: string } {
-    if (code === 0) return { desc: '맑음', icon: '☀️' };
-    if (code <= 3) return { desc: '구름', icon: '⛅' };
-    if (code <= 49) return { desc: '안개', icon: '🌫️' };
-    if (code <= 59) return { desc: '이슬비', icon: '🌦️' };
-    if (code <= 69) return { desc: '비', icon: '🌧️' };
-    if (code <= 79) return { desc: '눈', icon: '🌨️' };
-    if (code <= 82) return { desc: '소나기', icon: '🌧️' };
-    if (code <= 86) return { desc: '눈', icon: '🌨️' };
-    if (code <= 99) return { desc: '뇌우', icon: '⛈️' };
+    const isKo = language === 'ko';
+    if (code === 0) return { desc: isKo ? '맑음' : 'Clear', icon: '☀️' };
+    if (code <= 3) return { desc: isKo ? '구름' : 'Cloudy', icon: '⛅' };
+    if (code <= 49) return { desc: isKo ? '안개' : 'Fog', icon: '🌫️' };
+    if (code <= 59) return { desc: isKo ? '이슬비' : 'Drizzle', icon: '🌦️' };
+    if (code <= 69) return { desc: isKo ? '비' : 'Rain', icon: '🌧️' };
+    if (code <= 79) return { desc: isKo ? '눈' : 'Snow', icon: '🌨️' };
+    if (code <= 82) return { desc: isKo ? '소나기' : 'Showers', icon: '🌧️' };
+    if (code <= 86) return { desc: isKo ? '눈' : 'Snow', icon: '🌨️' };
+    if (code <= 99) return { desc: isKo ? '뇌우' : 'Thunder', icon: '⛈️' };
     return { desc: '', icon: '🌡️' };
   }
 
@@ -75,22 +78,22 @@ export function Header() {
     }
   }
 
-  // 한국 시간
-  const koreaDate = now.toLocaleDateString('ko-KR', {
+  const locale = language === 'ko' ? 'ko-KR' : 'en-US';
+
+  const koreaDate = now.toLocaleDateString(locale, {
     timeZone: 'Asia/Seoul',
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'short',
   });
-  const koreaTime = now.toLocaleTimeString('ko-KR', {
+  const koreaTime = now.toLocaleTimeString(locale, {
     timeZone: 'Asia/Seoul',
     hour: '2-digit', minute: '2-digit', hour12: false,
   });
 
-  // 워싱턴 D.C. 시간
-  const dcDate = now.toLocaleDateString('ko-KR', {
+  const dcDate = now.toLocaleDateString(locale, {
     timeZone: 'America/New_York',
     year: 'numeric', month: 'long', day: 'numeric', weekday: 'short',
   });
-  const dcTime = now.toLocaleTimeString('ko-KR', {
+  const dcTime = now.toLocaleTimeString(locale, {
     timeZone: 'America/New_York',
     hour: '2-digit', minute: '2-digit', hour12: false,
   });
@@ -102,17 +105,17 @@ export function Header() {
         <div className="container flex items-center justify-between">
           <div className="header-info">
             <span className="header-clock">
-              <span className="clock-label">서울</span> {koreaDate} {koreaTime}
+              <span className="clock-label">{t('header.seoul')}</span> {koreaDate} {koreaTime}
             </span>
             <span className="header-divider">|</span>
             <span className="header-clock">
-              <span className="clock-label">D.C.</span> {dcDate} {dcTime}
+              <span className="clock-label">{t('header.dc')}</span> {dcDate} {dcTime}
             </span>
             {weather && (
               <>
                 <span className="header-divider">|</span>
                 <span className="header-weather">
-                  {weather.icon} 워싱턴 {weather.temp}°C {weather.desc}
+                  {weather.icon} {t('header.weather')} {weather.temp}°C {weather.desc}
                 </span>
               </>
             )}
@@ -121,14 +124,14 @@ export function Header() {
             {user ? (
               <>
                 {staff && (
-                  <Link to="/admin" className="header-link">관리자</Link>
+                  <Link to="/admin" className="header-link">{t('header.admin')}</Link>
                 )}
-                <button onClick={signOut} className="header-link">로그아웃</button>
+                <button onClick={signOut} className="header-link">{t('header.logout')}</button>
               </>
             ) : (
               <>
-                <Link to="/login" className="header-link">로그인</Link>
-                <Link to="/register" className="header-link">회원가입</Link>
+                <Link to="/login" className="header-link">{t('header.login')}</Link>
+                <Link to="/register" className="header-link">{t('header.register')}</Link>
               </>
             )}
           </div>
@@ -142,15 +145,20 @@ export function Header() {
             <img src="/logo_thejoongang.png" alt="중앙일보 워싱턴" className="header-logo-img" />
             <span className="header-logo-region">| 워싱턴 D.C.</span>
           </Link>
-          <form className="header-search" onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="검색어를 입력하세요"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit">검색</button>
-          </form>
+          <div className="header-right">
+            <form className="header-search" onSubmit={handleSearch}>
+              <input
+                type="text"
+                placeholder={t('nav.searchPlaceholder')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button type="submit">{t('nav.search')}</button>
+            </form>
+            <button className="lang-switcher" onClick={toggleLanguage}>
+              {language === 'ko' ? 'EN' : '한'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -161,11 +169,11 @@ export function Header() {
             className="mobile-menu-btn hide-desktop"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            ☰ 메뉴
+            ☰ {t('header.menu')}
           </button>
           <ul className={`nav-list ${mobileMenuOpen ? 'open' : ''}`}>
             <li className="nav-item">
-              <Link to="/">홈</Link>
+              <Link to="/">{t('nav.home')}</Link>
             </li>
             {sections.map((section) => (
               <li key={section.id} className="nav-item">

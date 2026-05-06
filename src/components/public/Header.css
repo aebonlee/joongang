@@ -89,11 +89,34 @@
   opacity: 0.85;
 }
 
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .header-search {
   display: flex;
   border: 2px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
+}
+
+.lang-switcher {
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--brand-red);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.lang-switcher:hover {
+  background: var(--brand-red-dark);
 }
 
 .header-search input {
