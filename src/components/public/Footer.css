@@ -1,6 +1,6 @@
 .site-footer {
   background: #1B1B1B;
-  color: #aaa;
+  color: #ccc;
   padding: 40px 0 20px;
   margin-top: auto;
   border-top: 3px solid var(--brand-red);
@@ -23,9 +23,9 @@
 }
 
 .footer-desc {
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-sm);
   line-height: 1.8;
-  color: #888;
+  color: #bbb;
 }
 
 .footer-links {
@@ -36,7 +36,7 @@
 
 .footer-links a {
   font-size: var(--font-size-sm);
-  color: #aaa;
+  color: #ccc;
   padding: 4px 0;
 }
 
@@ -47,8 +47,8 @@
 .footer-bottom {
   padding-top: 20px;
   text-align: center;
-  font-size: var(--font-size-xs);
-  color: #666;
+  font-size: var(--font-size-sm);
+  color: #999;
 }
 
 @media (max-width: 768px) {
