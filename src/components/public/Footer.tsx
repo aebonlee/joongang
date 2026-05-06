@@ -12,7 +12,10 @@ export function Footer() {
               JoongAng Ilbo Washington DC, Inc.
             </p>
             <p className="footer-desc">
-              발행인: 류태호 | 편집국장: 김옥채 | 보도국장: 김윤미 | 광고국장: 정재군
+              발행인: 류태호 | 편집국장: 김옥채
+            </p>
+            <p className="footer-desc">
+              보도국장: 김윤미 | 광고국장: 정재군
             </p>
             <p className="footer-desc">
               주소: {siteConfig.contact.address}
