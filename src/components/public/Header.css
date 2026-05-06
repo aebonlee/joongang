@@ -11,36 +11,38 @@
   background: #1B1B1B;
   color: #ccc;
   font-size: var(--font-size-xs);
-  padding: 7px 0;
+  padding: 8px 0;
 }
 
 .header-info {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 4px;
 }
 
 .header-clock {
-  color: #ccc;
-  font-size: 11px;
+  color: #ddd;
+  font-size: 12px;
   letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 .clock-label {
   color: var(--brand-red);
   font-weight: 700;
-  margin-right: 4px;
+  margin-right: 5px;
 }
 
 .header-divider {
-  color: #555;
-  margin: 0 10px;
-  font-size: 10px;
+  color: #666;
+  margin: 0 12px;
+  font-size: 12px;
 }
 
 .header-weather {
   color: #ddd;
-  font-size: 11px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .header-actions {
@@ -65,9 +67,22 @@
   border-bottom: 1px solid var(--border-light);
 }
 
+.header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .header-logo-img {
   height: 36px;
   width: auto;
+}
+
+.header-logo-region {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: -0.3px;
 }
 
 .header-logo:hover {
@@ -143,15 +158,19 @@
   }
 
   .header-clock {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .header-weather {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .header-divider {
-    margin: 0 6px;
+    margin: 0 8px;
+  }
+
+  .header-logo-region {
+    font-size: 13px;
   }
 
   .nav-list {
