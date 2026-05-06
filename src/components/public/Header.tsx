@@ -140,7 +140,7 @@ export function Header() {
         <div className="container flex items-center justify-between">
           <Link to="/" className="header-logo">
             <img src="/logo_thejoongang.png" alt="중앙일보 워싱턴" className="header-logo-img" />
-            <span className="header-logo-region">| 워싱턴 D.C</span>
+            <span className="header-logo-region">| 워싱턴 D.C.</span>
           </Link>
           <form className="header-search" onSubmit={handleSearch}>
             <input

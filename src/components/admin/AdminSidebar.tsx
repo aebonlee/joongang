@@ -1,16 +1,31 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import './AdminSidebar.css';
 
-const menuItems = [
+interface MenuItem {
+  path: string;
+  label: string;
+  icon: string;
+}
+
+interface MenuGroup {
+  group: string;
+  icon: string;
+  items: MenuItem[];
+}
+
+const menuItems: MenuGroup[] = [
   {
     group: '대시보드',
+    icon: '📊',
     items: [
       { path: '/admin', label: '대시보드', icon: '📊' },
     ],
   },
   {
     group: '뉴스관리',
+    icon: '📰',
     items: [
       { path: '/admin/articles', label: '뉴스관리', icon: '📰' },
       { path: '/admin/articles/write', label: '뉴스등록', icon: '✏️' },
@@ -21,12 +36,14 @@ const menuItems = [
   },
   {
     group: '뉴스레터',
+    icon: '📧',
     items: [
       { path: '/admin/newsletter', label: '뉴스레터 신청 관리', icon: '📧' },
     ],
   },
   {
     group: '콘텐츠',
+    icon: '💬',
     items: [
       { path: '/admin/tips', label: '기사제보 관리', icon: '💡' },
       { path: '/admin/comments', label: '뉴스댓글 관리', icon: '💬' },
@@ -36,18 +53,28 @@ const menuItems = [
   },
   {
     group: '광고관리',
+    icon: '📢',
     items: [
       { path: '/admin/ads', label: '광고 현황', icon: '📢' },
       { path: '/admin/ads/slots', label: '슬롯 관리', icon: '🔲' },
       { path: '/admin/ads/advertisers', label: '광고주 관리', icon: '🏢' },
       { path: '/admin/ads/templates', label: '디자인 템플릿', icon: '🎨' },
+      { path: '/admin/ads/billing', label: '광고 정산', icon: '💰' },
+    ],
+  },
+  {
+    group: '회원관리',
+    icon: '👤',
+    items: [
+      { path: '/admin/members', label: '회원 관리', icon: '👤' },
+      { path: '/admin/staff', label: '스태프 관리', icon: '👥' },
     ],
   },
   {
     group: '설정',
+    icon: '⚙️',
     items: [
       { path: '/admin/sections', label: '섹션 관리', icon: '📑' },
-      { path: '/admin/staff', label: '스태프 관리', icon: '👥' },
       { path: '/admin/settings', label: '환경설정', icon: '⚙️' },
     ],
   },
@@ -56,6 +83,27 @@ const menuItems = [
 export function AdminSidebar() {
   const location = useLocation();
   const { staff } = useAuth();
+
+  // Determine which groups should be open initially based on current path
+  const getInitialOpenGroups = () => {
+    const open: Record<string, boolean> = {};
+    menuItems.forEach((group) => {
+      const isActive = group.items.some((item) => location.pathname === item.path);
+      open[group.group] = isActive;
+    });
+    // Always open dashboard
+    open['대시보드'] = true;
+    return open;
+  };
+
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(getInitialOpenGroups);
+
+  function toggleGroup(groupName: string) {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [groupName]: !prev[groupName],
+    }));
+  }
 
   return (
     <aside className="admin-sidebar">
@@ -77,24 +125,36 @@ export function AdminSidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        {menuItems.map((group) => (
-          <div key={group.group} className="nav-group">
-            <h4 className="nav-group-title">{group.group}</h4>
-            <ul className="nav-group-list">
-              {group.items.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    to={item.path}
-                    className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
-                  >
-                    <span className="nav-icon">{item.icon}</span>
-                    <span className="nav-label">{item.label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {menuItems.map((group) => {
+          const isOpen = openGroups[group.group] ?? false;
+          const hasActiveItem = group.items.some((item) => location.pathname === item.path);
+
+          return (
+            <div key={group.group} className="nav-group">
+              <button
+                className={`nav-group-header ${hasActiveItem ? 'has-active' : ''}`}
+                onClick={() => toggleGroup(group.group)}
+              >
+                <span className="nav-group-icon">{group.icon}</span>
+                <span className="nav-group-title">{group.group}</span>
+                <span className={`nav-group-arrow ${isOpen ? 'open' : ''}`}>▾</span>
+              </button>
+              <ul className={`nav-group-list ${isOpen ? 'open' : ''}`}>
+                {group.items.map((item) => (
+                  <li key={item.path}>
+                    <Link
+                      to={item.path}
+                      className={`nav-link ${location.pathname === item.path ? 'active' : ''}`}
+                    >
+                      <span className="nav-icon">{item.icon}</span>
+                      <span className="nav-label">{item.label}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
       </nav>
 
       <div className="sidebar-footer">

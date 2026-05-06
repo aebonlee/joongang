@@ -31,6 +31,8 @@ import TipManager from '@/pages/admin/tips/TipManager';
 import PressRelease from '@/pages/admin/distribution/PressRelease';
 import NewswireManager from '@/pages/admin/distribution/NewswireManager';
 import SiteSettings from '@/pages/admin/settings/SiteSettings';
+import MemberManager from '@/pages/admin/members/MemberManager';
+import AdBilling from '@/pages/admin/ads/AdBilling';
 
 export default function App() {
   return (
@@ -76,6 +78,9 @@ export default function App() {
         <Route path="ads/slots" element={<AdSlotManager />} />
         <Route path="ads/advertisers" element={<AdvertiserManager />} />
         <Route path="ads/templates" element={<AdTemplateManager />} />
+        <Route path="ads/billing" element={<AdBilling />} />
+        {/* 회원관리 */}
+        <Route path="members" element={<MemberManager />} />
         {/* 설정 */}
         <Route path="sections" element={<SectionManager />} />
         <Route path="staff" element={<StaffManager />} />
