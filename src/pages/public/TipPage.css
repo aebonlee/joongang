@@ -1,0 +1,86 @@
+/* TipPage - News Tip Submission */
+
+.tip-page .page-header-banner {
+  background: var(--brand-red);
+  color: #fff;
+  padding: 60px 0 40px;
+  text-align: center;
+}
+
+.tip-page .page-header-banner h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #fff;
+}
+
+.tip-page .page-header-banner p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0;
+}
+
+.tip-form-card {
+  background: #fff;
+  border-radius: 8px;
+  padding: 32px;
+  max-width: 640px;
+  margin: 40px auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tip-form-card .form-textarea {
+  min-height: 180px;
+}
+
+.tip-form-card .required {
+  color: var(--brand-red);
+  font-weight: 600;
+}
+
+.tip-submit-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.tip-success {
+  text-align: center;
+  padding: 60px 20px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.tip-success svg {
+  color: #22c55e;
+  margin-bottom: 20px;
+}
+
+.tip-success h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.tip-success p {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .tip-page .page-header-banner {
+    padding: 40px 0 28px;
+  }
+
+  .tip-page .page-header-banner h1 {
+    font-size: 22px;
+  }
+
+  .tip-form-card {
+    padding: 20px 16px;
+    margin: 24px auto;
+    border-radius: 6px;
+  }
+}

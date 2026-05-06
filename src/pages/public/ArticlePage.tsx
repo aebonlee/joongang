@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { AdBanner } from '@/components/public/AdBanner';
+import { CommentSection } from '@/components/public/CommentSection';
 import type { Article } from '@/types';
 import './ArticlePage.css';
 
@@ -190,6 +191,11 @@ export default function ArticlePage() {
           {/* 기사 하단 배너 */}
           <AdBanner slotCode="pc_article_bottom" className="ad-banner-bottom ad-banner-pc" />
           <AdBanner slotCode="mobile_article_bottom" className="ad-banner-bottom ad-banner-mobile" />
+
+          {/* Comments */}
+          {article.allow_comments && (
+            <CommentSection articleId={article.id} />
+          )}
 
           {/* Related articles */}
           {relatedArticles.length > 0 && (

@@ -8,6 +8,7 @@ import HomePage from '@/pages/public/HomePage';
 import SectionPage from '@/pages/public/SectionPage';
 import ArticlePage from '@/pages/public/ArticlePage';
 import SearchPage from '@/pages/public/SearchPage';
+import TipPage from '@/pages/public/TipPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import AuthCallbackPage from '@/pages/auth/AuthCallbackPage';
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="section/:slug/:subSlug" element={<SectionPage />} />
         <Route path="article/:slug" element={<ArticlePage />} />
         <Route path="search" element={<SearchPage />} />
+        <Route path="tip" element={<TipPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="auth/callback" element={<AuthCallbackPage />} />
