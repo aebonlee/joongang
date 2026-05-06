@@ -1,8 +1,9 @@
 .site-footer {
-  background: var(--primary);
+  background: #1B1B1B;
   color: #aaa;
   padding: 40px 0 20px;
   margin-top: 60px;
+  border-top: 3px solid var(--brand-red);
 }
 
 .footer-content {
@@ -15,7 +16,7 @@
 }
 
 .footer-logo {
-  color: #fff;
+  color: var(--brand-red);
   font-size: var(--font-size-xl);
   font-weight: 700;
   margin-bottom: 12px;
@@ -40,7 +41,7 @@
 }
 
 .footer-links a:hover {
-  color: #fff;
+  color: var(--brand-red);
 }
 
 .footer-bottom {

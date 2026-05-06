@@ -1,17 +1,21 @@
+/* ============================================
+   중앙일보 워싱턴 - Header Styles
+   ============================================ */
+
 .site-header {
-  border-bottom: 1px solid var(--border);
+  border-bottom: 3px solid var(--brand-red);
 }
 
-/* Top bar */
+/* Top bar - 중앙일보 스타일 다크 */
 .header-topbar {
-  background: var(--primary);
-  color: #ccc;
+  background: #1B1B1B;
+  color: #999;
   font-size: var(--font-size-xs);
   padding: 6px 0;
 }
 
 .header-date {
-  color: #aaa;
+  color: #999;
 }
 
 .header-actions {
@@ -20,7 +24,7 @@
 }
 
 .header-link {
-  color: #ccc;
+  color: #bbb;
   font-size: var(--font-size-xs);
   transition: color 0.2s;
 }
@@ -29,21 +33,22 @@
   color: #fff;
 }
 
-/* Logo area */
+/* Logo area - 깔끔한 화이트 배경 */
 .header-logo-area {
-  padding: 20px 0;
+  padding: 16px 0;
+  background: #fff;
   border-bottom: 1px solid var(--border-light);
 }
 
 .header-logo h1 {
   font-size: var(--font-size-3xl);
   font-weight: 900;
-  color: var(--news-blue);
+  color: var(--brand-red);
   letter-spacing: -1px;
 }
 
 .header-logo:hover h1 {
-  color: var(--news-blue);
+  color: var(--brand-red-dark);
 }
 
 .header-search {
@@ -62,7 +67,7 @@
 }
 
 .header-search button {
-  background: var(--news-blue);
+  background: var(--brand-red);
   color: #fff;
   padding: 8px 16px;
   font-size: var(--font-size-sm);
@@ -70,12 +75,12 @@
 }
 
 .header-search button:hover {
-  background: var(--primary);
+  background: var(--brand-red-dark);
 }
 
-/* Navigation */
+/* Navigation - 중앙일보 다크 네비 */
 .header-nav {
-  background: var(--news-blue);
+  background: #1B1B1B;
 }
 
 .nav-list {
@@ -89,11 +94,11 @@
   color: #fff;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
 
 .nav-item a:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--brand-red);
   color: #fff;
 }
 
