@@ -18,7 +18,6 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
   async function fetchAd() {
     const now = new Date().toISOString();
 
-    // Get slot id first
     const { data: slot } = await supabase
       .from('joongang_ad_slots')
       .select('id')
@@ -28,7 +27,6 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
 
     if (!slot) return;
 
-    // Get active ad for this slot
     const { data } = await supabase
       .from('joongang_ads')
       .select('*')
@@ -41,18 +39,17 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
 
     if (data && data.length > 0) {
       setAd(data[0]);
-      // Track impression
       supabase.rpc('joongang_increment_impression', { p_ad_id: data[0].id }).then(() => {});
     }
   }
 
-  async function handleClick() {
+  function handleClick() {
     if (!ad) return;
-    // Track click
     supabase.rpc('joongang_increment_click', { p_ad_id: ad.id }).then(() => {});
   }
 
-  if (!ad || !ad.image_url) return null;
+  if (!ad) return null;
+  if (!ad.image_url && !ad.html_content) return null;
 
   return (
     <div className={`ad-banner ${className}`}>
@@ -63,7 +60,14 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
         onClick={handleClick}
         className="ad-banner-link"
       >
-        <img src={ad.image_url} alt={ad.title} className="ad-banner-img" />
+        {ad.html_content ? (
+          <div
+            className="ad-banner-html"
+            dangerouslySetInnerHTML={{ __html: ad.html_content }}
+          />
+        ) : (
+          <img src={ad.image_url!} alt={ad.title} className="ad-banner-img" />
+        )}
       </a>
     </div>
   );
