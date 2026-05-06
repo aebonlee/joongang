@@ -13,7 +13,6 @@ INSERT INTO joongang_advertisers (company_name, contact_name, contact_email, con
   ('한인 여행사 투어코리아', '송민정', 'song@tourkorea.com', '703-555-0606', '한국행 항공권 특가', true);
 
 -- 2. 모든 슬롯에 광고 배치
--- 슬롯 ID를 서브쿼리로 참조, 광고주 ID도 서브쿼리로 참조
 
 -- PC 메인 상단 배너 (728x90)
 INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, start_date, end_date, is_active, open_new_tab, impression_count, click_count) VALUES
@@ -21,7 +20,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_main_top'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '한마음 부동산'),
   '한마음 부동산 - VA/MD 한인타운 매물 특선',
-  'https://placehold.co/728x90/E2231A/FFFFFF?text=한마음+부동산+%7C+VA/MD+매물특선+703-555-0101',
+  'https://placehold.co/728x90/E2231A/FFFFFF?text=Hanmaum+Realty+|+VA/MD+703-555-0101',
   'https://example.com/hanmaum-realty',
   '2026-05-01', '2026-12-31', true, true, 15420, 328
 );
@@ -32,7 +31,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_main_side_1'),
   (SELECT id FROM joongang_advertisers WHERE company_name = 'DMV 한인 자동차'),
   'DMV 한인자동차 - 신차급 중고차 특가',
-  'https://placehold.co/300x250/1B1B1B/FFFFFF?text=DMV+한인자동차%0A신차급+중고차+특가%0A301-555-0202',
+  'https://placehold.co/300x250/1B1B1B/FFFFFF?text=DMV+Korea+Auto%0APre-Owned+Cars%0A301-555-0202',
   'https://example.com/dmv-koreauto',
   '2026-05-01', '2026-12-31', true, true, 12350, 245
 );
@@ -43,7 +42,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_main_side_2'),
   (SELECT id FROM joongang_advertisers WHERE company_name = 'K-Beauty DC'),
   'K-Beauty DC - 한국 화장품 최대 50% 할인',
-  'https://placehold.co/300x250/FF69B4/FFFFFF?text=K-Beauty+DC%0A한국+화장품%0A최대+50%25+할인',
+  'https://placehold.co/300x250/FF69B4/FFFFFF?text=K-Beauty+DC%0AKorean+Cosmetics%0AUp+to+50%25+OFF',
   'https://example.com/kbeauty-dc',
   '2026-05-01', '2026-12-31', true, true, 9870, 412
 );
@@ -54,7 +53,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_main_mid'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '워싱턴 법률사무소'),
   '워싱턴 법률사무소 - 이민/비자 무료상담',
-  'https://placehold.co/728x90/003366/FFFFFF?text=워싱턴+법률사무소+%7C+이민·비자+무료상담+202-555-0404',
+  'https://placehold.co/728x90/003366/FFFFFF?text=DC+Korea+Law+|+Immigration+Consultation+202-555-0404',
   'https://example.com/dc-korealaw',
   '2026-05-01', '2026-12-31', true, true, 8540, 167
 );
@@ -65,7 +64,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_main_bottom'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '한인 여행사 투어코리아'),
   '투어코리아 - 한국행 왕복 $899부터',
-  'https://placehold.co/728x90/0066CC/FFFFFF?text=투어코리아+%7C+한국행+왕복+$899~+%7C+703-555-0606',
+  'https://placehold.co/728x90/0066CC/FFFFFF?text=Tour+Korea+|+Round+Trip+from+$899+|+703-555-0606',
   'https://example.com/tour-korea',
   '2026-05-01', '2026-12-31', true, true, 11200, 523
 );
@@ -76,7 +75,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_section_top'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '아리랑 식품'),
   '아리랑 식품 - Annandale 한국마트 주말특가',
-  'https://placehold.co/728x90/228B22/FFFFFF?text=아리랑+식품+%7C+주말특가+신선식품+%7C+703-555-0303',
+  'https://placehold.co/728x90/228B22/FFFFFF?text=Arirang+Food+|+Weekend+Sale+|+703-555-0303',
   'https://example.com/arirang-food',
   '2026-05-01', '2026-12-31', true, true, 6780, 198
 );
@@ -87,7 +86,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_section_side_1'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '한마음 부동산'),
   '한마음 부동산 - 이달의 추천매물',
-  'https://placehold.co/300x250/E2231A/FFFFFF?text=한마음+부동산%0A이달의+추천매물%0AVienna+%7C+McLean+%7C+Fairfax',
+  'https://placehold.co/300x250/E2231A/FFFFFF?text=Hanmaum+Realty%0AMonthly+Picks%0AVienna+|+McLean+|+Fairfax',
   'https://example.com/hanmaum-monthly',
   '2026-05-01', '2026-12-31', true, true, 5430, 156
 );
@@ -98,7 +97,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_article_top'),
   (SELECT id FROM joongang_advertisers WHERE company_name = 'DMV 한인 자동차'),
   'DMV 한인자동차 - 봄맞이 차량 세일',
-  'https://placehold.co/728x90/333333/FFFFFF?text=DMV+한인자동차+%7C+봄맞이+차량+세일+%7C+301-555-0202',
+  'https://placehold.co/728x90/333333/FFFFFF?text=DMV+Korea+Auto+|+Spring+Sale+|+301-555-0202',
   'https://example.com/dmv-spring-sale',
   '2026-05-01', '2026-12-31', true, true, 7650, 210
 );
@@ -109,7 +108,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_article_mid'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '워싱턴 법률사무소'),
   '워싱턴 법률 - 비즈니스/부동산 법률 자문',
-  'https://placehold.co/468x60/003366/FFFFFF?text=워싱턴+법률사무소+%7C+비즈니스·부동산+자문',
+  'https://placehold.co/468x60/003366/FFFFFF?text=DC+Korea+Law+|+Business+Consulting',
   'https://example.com/dc-law-biz',
   '2026-05-01', '2026-12-31', true, true, 4320, 89
 );
@@ -120,7 +119,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'pc_article_bottom'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '한인 여행사 투어코리아'),
   '투어코리아 - 여름 패키지 얼리버드 특가',
-  'https://placehold.co/728x90/0066CC/FFFFFF?text=투어코리아+%7C+여름+패키지+얼리버드+특가+%7C+예약접수중',
+  'https://placehold.co/728x90/0066CC/FFFFFF?text=Tour+Korea+|+Summer+Package+Early+Bird+Special',
   'https://example.com/tour-summer',
   '2026-05-01', '2026-12-31', true, true, 6890, 301
 );
@@ -131,7 +130,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'mobile_main_top'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '아리랑 식품'),
   '아리랑 식품 모바일 - 배달 주문',
-  'https://placehold.co/320x100/228B22/FFFFFF?text=아리랑식품+%7C+모바일+주문배달',
+  'https://placehold.co/320x100/228B22/FFFFFF?text=Arirang+Food+|+Mobile+Order',
   'https://example.com/arirang-mobile',
   '2026-05-01', '2026-12-31', true, true, 18900, 876
 );
@@ -142,7 +141,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'mobile_main_mid'),
   (SELECT id FROM joongang_advertisers WHERE company_name = 'K-Beauty DC'),
   'K-Beauty DC 모바일 앱 다운로드',
-  'https://placehold.co/320x250/FF69B4/FFFFFF?text=K-Beauty+DC%0A앱+다운로드%0A첫+주문+30%25+할인',
+  'https://placehold.co/320x250/FF69B4/FFFFFF?text=K-Beauty+DC%0ADownload+App%0A30%25+OFF+First+Order',
   'https://example.com/kbeauty-app',
   '2026-05-01', '2026-12-31', true, true, 14560, 634
 );
@@ -153,7 +152,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'mobile_article_top'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '한마음 부동산'),
   '한마음 부동산 - 모바일 매물검색',
-  'https://placehold.co/320x100/E2231A/FFFFFF?text=한마음부동산+%7C+모바일+매물검색',
+  'https://placehold.co/320x100/E2231A/FFFFFF?text=Hanmaum+Realty+|+Mobile+Search',
   'https://example.com/hanmaum-mobile',
   '2026-05-01', '2026-12-31', true, true, 16780, 723
 );
@@ -164,7 +163,7 @@ INSERT INTO joongang_ads (slot_id, advertiser_id, title, image_url, link_url, st
   (SELECT id FROM joongang_ad_slots WHERE slot_code = 'mobile_article_bottom'),
   (SELECT id FROM joongang_advertisers WHERE company_name = '한인 여행사 투어코리아'),
   '투어코리아 - 모바일 예약 할인',
-  'https://placehold.co/320x250/0066CC/FFFFFF?text=투어코리아%0A모바일+예약시%0A추가+5%25+할인',
+  'https://placehold.co/320x250/0066CC/FFFFFF?text=Tour+Korea%0AMobile+Booking%0AExtra+5%25+OFF',
   'https://example.com/tour-mobile',
   '2026-05-01', '2026-12-31', true, true, 13450, 589
 );
