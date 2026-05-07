@@ -7,6 +7,17 @@
   display: inline-block;
 }
 
+.ad-banner-html {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.ad-banner-html > div {
+  margin: 0 auto;
+}
+
 .ad-banner-img {
   max-width: 100%;
   height: auto;
