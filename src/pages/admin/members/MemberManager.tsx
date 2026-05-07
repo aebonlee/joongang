@@ -5,12 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 interface UserProfile {
   id: string;
   email: string;
-  name: string;
+  display_name: string | null;
   role: string;
-  phone: string | null;
+  provider: string | null;
+  signup_domain: string | null;
   created_at: string;
-  last_sign_in_at: string | null;
-  is_active: boolean;
+  updated_at: string | null;
   avatar_url: string | null;
 }
 
@@ -30,7 +30,6 @@ export default function MemberManager() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [loading, setLoading] = useState(false);
   const [selectedMember, setSelectedMember] = useState<UserProfile | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
@@ -42,25 +41,19 @@ export default function MemberManager() {
 
     let query = supabase
       .from('user_profiles')
-      .select('id, email, name, role, phone, created_at, last_sign_in_at, is_active, avatar_url', { count: 'exact' })
+      .select('id, email, display_name, role, provider, signup_domain, created_at, updated_at, avatar_url', { count: 'exact' })
       .order('created_at', { ascending: false })
       .range(from, to);
 
     if (search) {
-      query = query.or(`name.ilike.%${search}%,email.ilike.%${search}%`);
-    }
-
-    if (statusFilter === 'active') {
-      query = query.eq('is_active', true);
-    } else if (statusFilter === 'inactive') {
-      query = query.eq('is_active', false);
+      query = query.or(`display_name.ilike.%${search}%,email.ilike.%${search}%`);
     }
 
     const { data, count } = await query;
     if (data) setMembers(data as UserProfile[]);
     if (count !== null) setTotalCount(count);
     setLoading(false);
-  }, [page, search, statusFilter]);
+  }, [page, search]);
 
   useEffect(() => {
     fetchMembers();
@@ -78,15 +71,15 @@ export default function MemberManager() {
     setPage(1);
   }
 
-  async function toggleActive(member: UserProfile) {
-    if (!confirm(`${member.name || member.email} 회원을 ${member.is_active ? '비활성화' : '활성화'}하시겠습니까?`)) return;
+  async function changeRole(member: UserProfile, newRole: string) {
+    if (!confirm(`${member.display_name || member.email} 회원의 역할을 ${getRoleLabel(newRole)}(으)로 변경하시겠습니까?`)) return;
     await supabase
       .from('user_profiles')
-      .update({ is_active: !member.is_active })
+      .update({ role: newRole })
       .eq('id', member.id);
     fetchMembers();
     if (selectedMember?.id === member.id) {
-      setSelectedMember({ ...member, is_active: !member.is_active });
+      setSelectedMember({ ...member, role: newRole });
     }
   }
 
@@ -159,44 +152,22 @@ export default function MemberManager() {
         </button>
       </div>
 
-      {/* 검색 및 필터 */}
+      {/* 검색 */}
       <div className="card" style={{ padding: '16px', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-          <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px', flex: 1, minWidth: '240px' }}>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="이름 또는 이메일로 검색"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              style={{ flex: 1 }}
-            />
-            <button type="submit" className="btn btn-primary btn-sm">검색</button>
-            {search && (
-              <button type="button" className="btn btn-outline btn-sm" onClick={clearSearch}>초기화</button>
-            )}
-          </form>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button
-              className={`btn btn-sm ${statusFilter === 'all' ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => { setStatusFilter('all'); setPage(1); }}
-            >
-              전체
-            </button>
-            <button
-              className={`btn btn-sm ${statusFilter === 'active' ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => { setStatusFilter('active'); setPage(1); }}
-            >
-              활성
-            </button>
-            <button
-              className={`btn btn-sm ${statusFilter === 'inactive' ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => { setStatusFilter('inactive'); setPage(1); }}
-            >
-              비활성
-            </button>
-          </div>
-        </div>
+        <form onSubmit={handleSearch} style={{ display: 'flex', gap: '8px' }}>
+          <input
+            type="text"
+            className="form-input"
+            placeholder="이름 또는 이메일로 검색"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            style={{ flex: 1 }}
+          />
+          <button type="submit" className="btn btn-primary btn-sm">검색</button>
+          {search && (
+            <button type="button" className="btn btn-outline btn-sm" onClick={clearSearch}>초기화</button>
+          )}
+        </form>
       </div>
 
       {/* 테이블 */}
@@ -215,46 +186,33 @@ export default function MemberManager() {
               <th>이름</th>
               <th>이메일</th>
               <th style={{ width: '100px' }}>역할</th>
-              <th style={{ width: '120px' }}>전화번호</th>
+              <th style={{ width: '100px' }}>가입경로</th>
               <th style={{ width: '110px' }}>가입일</th>
-              <th style={{ width: '110px' }}>마지막 로그인</th>
-              <th style={{ width: '70px' }}>상태</th>
-              <th style={{ width: '130px' }}>관리</th>
+              <th style={{ width: '80px' }}>관리</th>
             </tr>
           </thead>
           <tbody>
             {members.map((member) => (
               <tr key={member.id}>
-                <td style={{ fontWeight: 500 }}>{member.name || '-'}</td>
+                <td style={{ fontWeight: 500 }}>{member.display_name || '-'}</td>
                 <td style={{ fontSize: '13px', color: '#666' }}>{member.email}</td>
                 <td>
                   <span className={`badge ${getRoleBadgeClass(member.role)}`}>
                     {getRoleLabel(member.role)}
                   </span>
                 </td>
-                <td style={{ fontSize: '13px' }}>{member.phone || '-'}</td>
+                <td style={{ fontSize: '13px' }}>{member.provider || 'email'}</td>
                 <td style={{ fontSize: '13px' }}>{formatDate(member.created_at)}</td>
-                <td style={{ fontSize: '13px' }}>{formatDate(member.last_sign_in_at)}</td>
                 <td>
-                  <span className={`badge ${member.is_active ? 'badge-green' : 'badge-gray'}`}>
-                    {member.is_active ? '활성' : '비활성'}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', gap: '4px' }}>
-                    <button className="btn btn-sm btn-outline" onClick={() => openPanel(member)}>
-                      상세
-                    </button>
-                    <button className="btn btn-sm btn-outline" onClick={() => toggleActive(member)}>
-                      {member.is_active ? '중지' : '활성'}
-                    </button>
-                  </div>
+                  <button className="btn btn-sm btn-outline" onClick={() => openPanel(member)}>
+                    상세
+                  </button>
                 </td>
               </tr>
             ))}
             {!loading && members.length === 0 && (
               <tr>
-                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+                <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
                   {search ? '검색 결과가 없습니다.' : '등록된 회원이 없습니다.'}
                 </td>
               </tr>
@@ -356,15 +314,15 @@ export default function MemberManager() {
                     {selectedMember.avatar_url ? (
                       <img
                         src={selectedMember.avatar_url}
-                        alt={selectedMember.name || ''}
+                        alt={selectedMember.display_name || ''}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     ) : (
-                      (selectedMember.name || selectedMember.email)?.[0]?.toUpperCase() || '?'
+                      (selectedMember.display_name || selectedMember.email)?.[0]?.toUpperCase() || '?'
                     )}
                   </div>
                   <div>
-                    <div style={{ fontSize: '18px', fontWeight: 600 }}>{selectedMember.name || '-'}</div>
+                    <div style={{ fontSize: '18px', fontWeight: 600 }}>{selectedMember.display_name || '-'}</div>
                     <div style={{ fontSize: '13px', color: '#6b7280' }}>{selectedMember.email}</div>
                   </div>
                 </div>
@@ -381,21 +339,17 @@ export default function MemberManager() {
                     </span>
                   </span>
 
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>상태</span>
-                  <span>
-                    <span className={`badge ${selectedMember.is_active ? 'badge-green' : 'badge-gray'}`}>
-                      {selectedMember.is_active ? '활성' : '비활성'}
-                    </span>
-                  </span>
+                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>가입경로</span>
+                  <span>{selectedMember.provider || 'email'}</span>
 
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>전화번호</span>
-                  <span>{selectedMember.phone || '-'}</span>
+                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>가입도메인</span>
+                  <span style={{ fontSize: '13px' }}>{selectedMember.signup_domain || '-'}</span>
 
                   <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>가입일</span>
                   <span>{formatDateTime(selectedMember.created_at)}</span>
 
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>마지막 로그인</span>
-                  <span>{formatDateTime(selectedMember.last_sign_in_at)}</span>
+                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>수정일</span>
+                  <span>{formatDateTime(selectedMember.updated_at)}</span>
 
                   <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>회원 ID</span>
                   <span style={{ fontSize: '11px', color: '#9ca3af', wordBreak: 'break-all' }}>
@@ -403,15 +357,26 @@ export default function MemberManager() {
                   </span>
                 </div>
 
-                {/* 패널 액션 버튼 */}
+                {/* 역할 변경 버튼 */}
                 <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                  <button
-                    className={`btn btn-sm ${selectedMember.is_active ? 'btn-danger' : 'btn-primary'}`}
-                    onClick={() => toggleActive(selectedMember)}
-                    style={{ flex: 1 }}
-                  >
-                    {selectedMember.is_active ? '비활성화' : '활성화'}
-                  </button>
+                  {selectedMember.role !== 'admin' && (
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => changeRole(selectedMember, 'admin')}
+                      style={{ flex: 1 }}
+                    >
+                      관리자로 변경
+                    </button>
+                  )}
+                  {selectedMember.role === 'admin' && (
+                    <button
+                      className="btn btn-sm btn-outline"
+                      onClick={() => changeRole(selectedMember, 'member')}
+                      style={{ flex: 1 }}
+                    >
+                      일반회원으로 변경
+                    </button>
+                  )}
                 </div>
               </div>
             )}
