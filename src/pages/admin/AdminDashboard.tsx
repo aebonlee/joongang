@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/contexts/AuthContext';
 import './AdminDashboard.css';
 
 interface Stats {
@@ -10,7 +11,20 @@ interface Stats {
   totalComments: number;
 }
 
+type LayoutType = 'auto' | 'layout-a' | 'layout-b' | 'layout-c' | 'layout-d' | 'layout-e' | 'layout-f';
+
+const LAYOUT_OPTIONS: { value: LayoutType; label: string; desc: string }[] = [
+  { value: 'auto', label: '자동 (4시간 교체)', desc: '4시간마다 A~F를 순환합니다' },
+  { value: 'layout-a', label: 'A: 헤드라인 + 그리드', desc: '큰 헤드라인 카드 + 2x2 주요뉴스 그리드' },
+  { value: 'layout-b', label: 'B: 신문 1면', desc: '좌측 대형 기사 + 우측 5개 기사 목록' },
+  { value: 'layout-c', label: 'C: 매거진 3컬럼', desc: '3열 카드 그리드 매거진 스타일' },
+  { value: 'layout-d', label: 'D: 풀폭 히어로', desc: '전면 이미지 히어로 + 수평 스크롤 카드' },
+  { value: 'layout-e', label: 'E: 뉴스포털', desc: '좌측 대형 이미지 + 우측 기사 목록' },
+  { value: 'layout-f', label: 'F: 모자이크 타일', desc: '1대형 + 2중형 타일 조합' },
+];
+
 export default function AdminDashboard() {
+  const { isAdmin } = useAuth();
   const [stats, setStats] = useState<Stats>({
     todayArticles: 0,
     totalArticles: 0,
@@ -18,10 +32,14 @@ export default function AdminDashboard() {
     totalComments: 0,
   });
   const [recentArticles, setRecentArticles] = useState<any[]>([]);
+  const [selectedLayout, setSelectedLayout] = useState<LayoutType>('auto');
+  const [layoutSaving, setLayoutSaving] = useState(false);
+  const [layoutMsg, setLayoutMsg] = useState('');
 
   useEffect(() => {
     fetchStats();
     fetchRecentArticles();
+    fetchCurrentLayout();
   }, []);
 
   async function fetchStats() {
@@ -49,6 +67,50 @@ export default function AdminDashboard() {
       .order('created_at', { ascending: false })
       .limit(10);
     if (data) setRecentArticles(data);
+  }
+
+  async function fetchCurrentLayout() {
+    const { data } = await supabase
+      .from('joongang_layout_settings')
+      .select('layout_config')
+      .eq('page_type', 'main')
+      .single();
+    if (data?.layout_config?.home_layout) {
+      setSelectedLayout(data.layout_config.home_layout as LayoutType);
+    } else {
+      setSelectedLayout('auto');
+    }
+  }
+
+  async function saveLayout(layout: LayoutType) {
+    setLayoutSaving(true);
+    setSelectedLayout(layout);
+
+    const configValue = layout === 'auto' ? {} : { home_layout: layout };
+
+    // Try update first
+    const { data: existing } = await supabase
+      .from('joongang_layout_settings')
+      .select('id, layout_config')
+      .eq('page_type', 'main')
+      .single();
+
+    if (existing) {
+      const merged = { ...existing.layout_config, ...configValue };
+      if (layout === 'auto') delete merged.home_layout;
+      await supabase
+        .from('joongang_layout_settings')
+        .update({ layout_config: merged })
+        .eq('id', existing.id);
+    } else {
+      await supabase
+        .from('joongang_layout_settings')
+        .insert({ page_type: 'main', layout_config: configValue, header_style: 'style_b' });
+    }
+
+    setLayoutSaving(false);
+    setLayoutMsg('레이아웃이 변경되었습니다.');
+    setTimeout(() => setLayoutMsg(''), 3000);
   }
 
   function formatDate(date: string) {
@@ -104,6 +166,34 @@ export default function AdminDashboard() {
           광고 관리
         </Link>
       </div>
+
+      {/* Layout selector */}
+      {isAdmin && (
+        <div className="card" style={{ padding: '20px', marginBottom: '20px' }}>
+          <h3 style={{ marginBottom: '4px', fontSize: '16px', fontWeight: 600 }}>메인 페이지 레이아웃</h3>
+          <p style={{ fontSize: '13px', color: '#6b7280', marginBottom: '16px' }}>
+            홈페이지 디자인을 선택합니다. "자동"은 4시간마다 A~F를 순환합니다.
+          </p>
+          <div className="layout-selector-grid">
+            {LAYOUT_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                className={`layout-option ${selectedLayout === opt.value ? 'layout-option-active' : ''}`}
+                onClick={() => saveLayout(opt.value)}
+                disabled={layoutSaving}
+              >
+                <strong>{opt.label}</strong>
+                <span>{opt.desc}</span>
+              </button>
+            ))}
+          </div>
+          {layoutMsg && (
+            <div style={{ marginTop: '12px', padding: '8px 12px', background: '#ecfdf5', color: '#059669', borderRadius: '6px', fontSize: '13px' }}>
+              {layoutMsg}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Recent articles */}
       <div className="card">
