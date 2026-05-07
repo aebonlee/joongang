@@ -5,7 +5,8 @@
 }
 
 .ad-banner-link {
-  display: block;
+  display: flex;
+  justify-content: center;
 }
 
 .ad-banner-img {
