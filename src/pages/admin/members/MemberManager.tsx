@@ -42,6 +42,7 @@ export default function MemberManager() {
     let query = supabase
       .from('user_profiles')
       .select('id, email, display_name, role, provider, signup_domain, created_at, updated_at, avatar_url', { count: 'exact' })
+      .eq('signup_domain', 'joongang.dreamitbiz.com')
       .order('created_at', { ascending: false })
       .range(from, to);
 
