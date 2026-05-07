@@ -1,35 +1,13 @@
-/* 배너 최외곽: 전체 너비 확보 + 텍스트 중앙정렬 */
 .ad-banner {
   margin: 16px 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
 }
 
-/* 링크: 축소하지 않고 내용물 크기에 맞추되 중앙 배치 */
-.ad-banner-link {
-  display: block;
-  text-align: center;
-}
-
-/* HTML 광고 래퍼: 내부 고정폭 div를 중앙 정렬 */
-.ad-banner-html {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-/* 이미지 배너 */
 .ad-banner-img {
   max-width: 100%;
   height: auto;
   border-radius: 4px;
-  display: block;
-  margin: 0 auto;
 }
 
-/* 위치별 마진 */
 .ad-banner-top {
   margin: 20px 0;
 }
@@ -50,7 +28,6 @@
   width: 100%;
 }
 
-/* PC/모바일 토글 */
 @media (max-width: 768px) {
   .ad-banner-pc {
     display: none;

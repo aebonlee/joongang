@@ -46,28 +46,53 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
   function handleClick() {
     if (!ad) return;
     supabase.rpc('joongang_increment_click', { p_ad_id: ad.id }).then(() => {});
+    const url = ad.link_url || '#';
+    if (url !== '#') {
+      if (ad.open_new_tab) {
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        window.location.href = url;
+      }
+    }
   }
 
   if (!ad) return null;
   if (!ad.image_url && !ad.html_content) return null;
 
+  // HTML 광고: <a> 태그 제거하고 가장 심플한 구조로 중앙정렬
+  if (ad.html_content) {
+    return (
+      <div
+        className={`ad-banner ${className}`}
+        onClick={handleClick}
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100%',
+          cursor: 'pointer',
+        }}
+      >
+        <div dangerouslySetInnerHTML={{ __html: ad.html_content }} />
+      </div>
+    );
+  }
+
+  // 이미지 광고
   return (
-    <div className={`ad-banner ${className}`}>
+    <div
+      className={`ad-banner ${className}`}
+      style={{ textAlign: 'center' }}
+    >
       <a
         href={ad.link_url || '#'}
         target={ad.open_new_tab ? '_blank' : '_self'}
         rel="noopener noreferrer"
-        onClick={handleClick}
-        className="ad-banner-link"
+        onClick={() => {
+          if (ad) supabase.rpc('joongang_increment_click', { p_ad_id: ad.id }).then(() => {});
+        }}
       >
-        {ad.html_content ? (
-          <div
-            className="ad-banner-html"
-            dangerouslySetInnerHTML={{ __html: ad.html_content }}
-          />
-        ) : (
-          <img src={ad.image_url!} alt={ad.title} className="ad-banner-img" />
-        )}
+        <img src={ad.image_url!} alt={ad.title} className="ad-banner-img" />
       </a>
     </div>
   );

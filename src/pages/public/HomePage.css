@@ -24,7 +24,7 @@
 .headline-image {
   flex-shrink: 0;
   width: 500px;
-  height: 300px;
+  min-height: 300px;
   overflow: hidden;
 }
 
@@ -239,11 +239,13 @@
 }
 
 .layout-b-main-card {
-  display: block;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-light);
   transition: box-shadow 0.2s;
+  height: 100%;
 }
 
 .layout-b-main-card:hover {
@@ -251,7 +253,8 @@
 }
 
 .layout-b-main-image {
-  height: 320px;
+  flex: 1;
+  min-height: 200px;
   overflow: hidden;
 }
 
@@ -419,11 +422,13 @@
 }
 
 .layout-e-hero {
-  display: block;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
   overflow: hidden;
   transition: box-shadow 0.2s;
+  height: 100%;
 }
 
 .layout-e-hero:hover {
@@ -432,7 +437,8 @@
 
 .layout-e-hero img {
   width: 100%;
-  height: 280px;
+  flex: 1;
+  min-height: 200px;
   object-fit: cover;
 }
 
