@@ -1,21 +1,11 @@
 .ad-banner {
-  text-align: center;
+  display: flex;
+  justify-content: center;
   margin: 16px 0;
 }
 
 .ad-banner-link {
-  display: inline-block;
-}
-
-.ad-banner-html {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
-.ad-banner-html > div {
-  margin: 0 auto;
+  display: block;
 }
 
 .ad-banner-img {
