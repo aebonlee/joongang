@@ -1,12 +1,21 @@
 .ad-banner {
-  display: flex;
-  justify-content: center;
   margin: 16px 0;
 }
 
 .ad-banner-link {
   display: flex;
   justify-content: center;
+  width: 100%;
+}
+
+.ad-banner-html {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.ad-banner-html > div {
+  margin: 0 auto;
 }
 
 .ad-banner-img {
