@@ -21,6 +21,12 @@ const roleLabel: Record<string, string> = {
   superadmin: '최고관리자',
 };
 
+const staffRoleLabel: Record<string, string> = {
+  reporter: '기자',
+  editor: '편집장',
+  superadmin: '최고관리자',
+};
+
 const PER_PAGE = 20;
 
 export default function MemberManager() {
@@ -33,6 +39,8 @@ export default function MemberManager() {
   const [loading, setLoading] = useState(false);
   const [selectedMember, setSelectedMember] = useState<UserProfile | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [promoteRole, setPromoteRole] = useState<string>('reporter');
+  const [actionMsg, setActionMsg] = useState('');
 
   const fetchMembers = useCallback(async () => {
     setLoading(true);
@@ -72,30 +80,71 @@ export default function MemberManager() {
     setPage(1);
   }
 
-  async function changeRole(member: UserProfile, newRole: string) {
-    if (!confirm(`${member.display_name || member.email} 회원의 역할을 ${getRoleLabel(newRole)}(으)로 변경하시겠습니까?`)) return;
-    await supabase
-      .from('user_profiles')
-      .update({ role: newRole })
-      .eq('id', member.id);
-    fetchMembers();
-    if (selectedMember?.id === member.id) {
-      setSelectedMember({ ...member, role: newRole });
+  // 기자/편집장 승급 (joongang_staff에 추가)
+  async function promoteToStaff(member: UserProfile) {
+    const roleName = staffRoleLabel[promoteRole] || promoteRole;
+    if (!confirm(`${member.display_name || member.email}님을 ${roleName}(으)로 승급하시겠습니까?`)) return;
+
+    // 이미 스태프인지 확인
+    const { data: existing } = await supabase
+      .from('joongang_staff')
+      .select('id')
+      .eq('email', member.email)
+      .single();
+
+    if (existing) {
+      // 이미 존재 → 역할만 업데이트
+      await supabase
+        .from('joongang_staff')
+        .update({ role: promoteRole, is_active: true })
+        .eq('email', member.email);
+      setActionMsg(`${member.display_name || member.email}님의 스태프 역할이 ${roleName}(으)로 변경되었습니다.`);
+    } else {
+      // 새로 추가
+      const { error } = await supabase
+        .from('joongang_staff')
+        .insert({
+          user_id: member.id,
+          name: member.display_name || member.email.split('@')[0],
+          email: member.email,
+          role: promoteRole,
+          is_active: true,
+        });
+      if (error) {
+        setActionMsg(`오류: ${error.message}`);
+        return;
+      }
+      setActionMsg(`${member.display_name || member.email}님이 ${roleName}(으)로 등록되었습니다.`);
     }
+    setTimeout(() => setActionMsg(''), 4000);
+  }
+
+  // 비밀번호 초기화 메일 발송
+  async function sendPasswordReset(member: UserProfile) {
+    if (!confirm(`${member.email}로 비밀번호 재설정 메일을 발송하시겠습니까?\n\n구글 가입 사용자도 이 메일을 통해 비밀번호를 설정하면 이메일+비밀번호로 로그인할 수 있습니다.`)) return;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(member.email, {
+      redirectTo: `${window.location.origin}/auth/callback`,
+    });
+
+    if (error) {
+      setActionMsg(`오류: ${error.message}`);
+    } else {
+      setActionMsg(`${member.email}로 비밀번호 재설정 메일이 발송되었습니다.`);
+    }
+    setTimeout(() => setActionMsg(''), 4000);
   }
 
   function openPanel(member: UserProfile) {
     setSelectedMember(member);
     setPanelOpen(true);
+    setPromoteRole('reporter');
+    setActionMsg('');
   }
 
   function closePanel() {
     setPanelOpen(false);
     setTimeout(() => setSelectedMember(null), 300);
-  }
-
-  function handleExport() {
-    alert('내보내기 기능은 준비 중입니다.');
   }
 
   function formatDate(date: string | null) {
@@ -148,9 +197,6 @@ export default function MemberManager() {
           <h2 style={{ fontSize: '22px', fontWeight: 700, margin: 0 }}>회원 관리</h2>
           <span style={{ color: '#6b7280', fontSize: '14px' }}>총 {totalCount.toLocaleString('ko-KR')}명</span>
         </div>
-        <button className="btn btn-outline" onClick={handleExport}>
-          내보내기
-        </button>
       </div>
 
       {/* 검색 */}
@@ -186,10 +232,9 @@ export default function MemberManager() {
             <tr>
               <th>이름</th>
               <th>이메일</th>
-              <th style={{ width: '100px' }}>역할</th>
               <th style={{ width: '100px' }}>가입경로</th>
               <th style={{ width: '110px' }}>가입일</th>
-              <th style={{ width: '80px' }}>관리</th>
+              <th style={{ width: '160px' }}>관리</th>
             </tr>
           </thead>
           <tbody>
@@ -197,23 +242,23 @@ export default function MemberManager() {
               <tr key={member.id}>
                 <td style={{ fontWeight: 500 }}>{member.display_name || '-'}</td>
                 <td style={{ fontSize: '13px', color: '#666' }}>{member.email}</td>
-                <td>
-                  <span className={`badge ${getRoleBadgeClass(member.role)}`}>
-                    {getRoleLabel(member.role)}
-                  </span>
-                </td>
                 <td style={{ fontSize: '13px' }}>{member.provider || 'email'}</td>
                 <td style={{ fontSize: '13px' }}>{formatDate(member.created_at)}</td>
                 <td>
-                  <button className="btn btn-sm btn-outline" onClick={() => openPanel(member)}>
-                    상세
-                  </button>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <button className="btn btn-sm btn-outline" onClick={() => openPanel(member)}>
+                      상세
+                    </button>
+                    <button className="btn btn-sm btn-outline" onClick={() => sendPasswordReset(member)}>
+                      비밀번호
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
             {!loading && members.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
+                <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
                   {search ? '검색 결과가 없습니다.' : '등록된 회원이 없습니다.'}
                 </td>
               </tr>
@@ -221,6 +266,18 @@ export default function MemberManager() {
           </tbody>
         </table>
       </div>
+
+      {/* 액션 메시지 */}
+      {actionMsg && (
+        <div style={{
+          position: 'fixed', bottom: '24px', left: '50%', transform: 'translateX(-50%)',
+          background: '#1f2937', color: '#fff', padding: '12px 24px',
+          borderRadius: '8px', fontSize: '14px', zIndex: 2000,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+        }}>
+          {actionMsg}
+        </div>
+      )}
 
       {/* 페이지네이션 */}
       {totalPages > 1 && (
@@ -282,7 +339,7 @@ export default function MemberManager() {
           <div
             style={{
               position: 'relative',
-              width: '420px',
+              width: '440px',
               maxWidth: '90vw',
               background: '#fff',
               boxShadow: '-4px 0 24px rgba(0, 0, 0, 0.12)',
@@ -333,51 +390,64 @@ export default function MemberManager() {
                   display: 'grid', gridTemplateColumns: '100px 1fr',
                   gap: '12px 8px', fontSize: '14px',
                 }}>
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>역할</span>
-                  <span>
-                    <span className={`badge ${getRoleBadgeClass(selectedMember.role)}`}>
-                      {getRoleLabel(selectedMember.role)}
-                    </span>
-                  </span>
-
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>가입경로</span>
+                  <span style={{ color: '#6b7280', fontWeight: 500 }}>가입경로</span>
                   <span>{selectedMember.provider || 'email'}</span>
 
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>가입도메인</span>
-                  <span style={{ fontSize: '13px' }}>{selectedMember.signup_domain || '-'}</span>
-
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>가입일</span>
+                  <span style={{ color: '#6b7280', fontWeight: 500 }}>가입일</span>
                   <span>{formatDateTime(selectedMember.created_at)}</span>
 
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>수정일</span>
-                  <span>{formatDateTime(selectedMember.updated_at)}</span>
-
-                  <span className="form-label" style={{ margin: 0, color: '#6b7280' }}>회원 ID</span>
+                  <span style={{ color: '#6b7280', fontWeight: 500 }}>회원 ID</span>
                   <span style={{ fontSize: '11px', color: '#9ca3af', wordBreak: 'break-all' }}>
                     {selectedMember.id}
                   </span>
                 </div>
 
-                {/* 역할 변경 버튼 */}
-                <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                  {selectedMember.role !== 'admin' && (
+                {/* 구분선 */}
+                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '4px 0' }} />
+
+                {/* 기자/편집장 승급 */}
+                <div>
+                  <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 12px' }}>스태프 승급</h4>
+                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px' }}>
+                    회원을 기자 또는 편집장으로 승급합니다. 승급 후 관리자 페이지 접근이 가능합니다.
+                  </p>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <select
+                      className="form-input"
+                      value={promoteRole}
+                      onChange={(e) => setPromoteRole(e.target.value)}
+                      style={{ width: '140px' }}
+                    >
+                      <option value="reporter">기자</option>
+                      <option value="editor">편집장</option>
+                    </select>
                     <button
                       className="btn btn-sm btn-primary"
-                      onClick={() => changeRole(selectedMember, 'admin')}
-                      style={{ flex: 1 }}
+                      onClick={() => promoteToStaff(selectedMember)}
                     >
-                      관리자로 변경
+                      승급
                     </button>
-                  )}
-                  {selectedMember.role === 'admin' && (
-                    <button
-                      className="btn btn-sm btn-outline"
-                      onClick={() => changeRole(selectedMember, 'member')}
-                      style={{ flex: 1 }}
-                    >
-                      일반회원으로 변경
-                    </button>
-                  )}
+                  </div>
+                </div>
+
+                {/* 구분선 */}
+                <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '4px 0' }} />
+
+                {/* 비밀번호 초기화 */}
+                <div>
+                  <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 12px' }}>비밀번호 관리</h4>
+                  <p style={{ fontSize: '13px', color: '#6b7280', margin: '0 0 12px' }}>
+                    비밀번호 재설정 메일을 발송합니다.
+                    {selectedMember.provider === 'google' && (
+                      <><br /><strong style={{ color: '#b45309' }}>구글 가입 사용자:</strong> 이 메일을 통해 비밀번호를 설정하면 이메일+비밀번호로도 로그인할 수 있습니다.</>
+                    )}
+                  </p>
+                  <button
+                    className="btn btn-sm btn-outline"
+                    onClick={() => sendPasswordReset(selectedMember)}
+                  >
+                    비밀번호 재설정 메일 발송
+                  </button>
                 </div>
               </div>
             )}
