@@ -50,7 +50,7 @@ export default function HomePage() {
       .eq('status', 'published')
       .eq('is_published', true)
       .order('published_at', { ascending: false })
-      .limit(20);
+      .limit(30);
     if (data) {
       setArticles(data);
       setFeaturedArticles(data.filter((a: Article) => a.is_featured || a.priority > 0).slice(0, 6));
@@ -82,8 +82,7 @@ export default function HomePage() {
   const hero = articles[0];
   const top4 = articles.slice(1, 5);
   const top6 = articles.slice(0, 6);
-  const latest = articles.slice(0, 15);
-  const subList = articles.slice(5, 15);
+  const subList = articles.slice(5, 20);
 
   // ────────────────────────────────────
   // 공통 컴포넌트
@@ -99,7 +98,11 @@ export default function HomePage() {
             <div className="photo-news-list">
               {photoArticles.map((a) => (
                 <Link key={a.id} to={`/article/${a.slug}`} className="photo-news-item">
-                  {a.thumbnail_url && <img src={a.thumbnail_url} alt={a.title} />}
+                  {a.thumbnail_url ? (
+                    <img src={a.thumbnail_url} alt={a.title} />
+                  ) : (
+                    <div className="news-card-placeholder photo-news-placeholder" />
+                  )}
                   <span className="photo-news-title line-clamp-2">{a.title}</span>
                 </Link>
               ))}
@@ -140,13 +143,22 @@ export default function HomePage() {
   function NewsCard({ article }: { article: Article }) {
     return (
       <Link to={`/article/${article.slug}`} className="news-card">
-        {article.thumbnail_url && (
-          <div className="news-card-image">
+        <div className="news-card-image">
+          {article.thumbnail_url ? (
             <img src={article.thumbnail_url} alt={article.title} />
-          </div>
-        )}
+          ) : (
+            <div className="news-card-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/>
+                <path d="m3 16 5-5 4 4 4-4 5 5"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+              </svg>
+            </div>
+          )}
+        </div>
         <div className="news-card-content">
           <h4 className="news-card-title line-clamp-2">{article.title}</h4>
+          {article.excerpt && <p className="news-card-excerpt line-clamp-2">{article.excerpt}</p>}
           <span className="news-card-date">{formatDate(article.published_at)}</span>
         </div>
       </Link>
@@ -156,11 +168,19 @@ export default function HomePage() {
   function HeroCard({ article }: { article: Article }) {
     return (
       <Link to={`/article/${article.slug}`} className="headline-card">
-        {article.thumbnail_url && (
-          <div className="headline-image">
+        <div className="headline-image">
+          {article.thumbnail_url ? (
             <img src={article.thumbnail_url} alt={article.title} />
-          </div>
-        )}
+          ) : (
+            <div className="news-card-placeholder headline-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/>
+                <path d="m3 16 5-5 4 4 4-4 5 5"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+              </svg>
+            </div>
+          )}
+        </div>
         <div className="headline-content">
           <h2 className="headline-title">{article.title}</h2>
           {article.subtitle && <p className="headline-subtitle">{article.subtitle}</p>}
@@ -200,7 +220,13 @@ export default function HomePage() {
             <AdBanner slotCode="pc_main_mid" className="ad-banner-mid ad-banner-pc" />
             <section className="home-section">
               <h3 className="section-title">최신뉴스</h3>
-              <NewsList items={subList} />
+              <NewsList items={articles.slice(5, 20)} />
+            </section>
+            <section className="home-section">
+              <h3 className="section-title">더보기</h3>
+              <div className="top-news-grid">
+                {articles.slice(20, 24).map((a) => <NewsCard key={a.id} article={a} />)}
+              </div>
             </section>
           </div>
           <Sidebar />
@@ -218,11 +244,13 @@ export default function HomePage() {
         <div className="layout-b-hero">
           {hero && (
             <Link to={`/article/${hero.slug}`} className="layout-b-main-card">
-              {hero.thumbnail_url && (
-                <div className="layout-b-main-image">
+              <div className="layout-b-main-image">
+                {hero.thumbnail_url ? (
                   <img src={hero.thumbnail_url} alt={hero.title} />
-                </div>
-              )}
+                ) : (
+                  <div className="news-card-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/><path d="m3 16 5-5 4 4 4-4 5 5"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
+                )}
+              </div>
               <h2 className="layout-b-main-title">{hero.title}</h2>
               {hero.excerpt && <p className="layout-b-main-excerpt">{hero.excerpt}</p>}
             </Link>
@@ -230,7 +258,17 @@ export default function HomePage() {
           <div className="layout-b-side-list">
             {articles.slice(1, 6).map((a) => (
               <Link key={a.id} to={`/article/${a.slug}`} className="layout-b-side-item">
-                {a.thumbnail_url && <img src={a.thumbnail_url} alt={a.title} />}
+                {a.thumbnail_url ? (
+                  <img src={a.thumbnail_url} alt={a.title} />
+                ) : (
+                  <div className="layout-b-side-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/>
+                      <path d="m3 16 5-5 4 4 4-4 5 5"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                    </svg>
+                  </div>
+                )}
                 <div>
                   <h4 className="line-clamp-2">{a.title}</h4>
                   <span className="news-card-date">{formatDate(a.published_at)}</span>
@@ -244,7 +282,13 @@ export default function HomePage() {
           <div className="home-main">
             <section className="home-section">
               <h3 className="section-title">최신뉴스</h3>
-              <NewsList items={articles.slice(6, 16)} />
+              <NewsList items={articles.slice(6, 18)} />
+            </section>
+            <section className="home-section">
+              <h3 className="section-title">더보기</h3>
+              <div className="top-news-grid">
+                {articles.slice(18, 22).map((a) => <NewsCard key={a.id} article={a} />)}
+              </div>
             </section>
           </div>
           <Sidebar />
@@ -270,7 +314,13 @@ export default function HomePage() {
           <div className="home-main">
             <section className="home-section">
               <h3 className="section-title">최신뉴스</h3>
-              <NewsList items={articles.slice(6, 16)} />
+              <NewsList items={articles.slice(6, 18)} />
+            </section>
+            <section className="home-section">
+              <h3 className="section-title">더보기</h3>
+              <div className="top-news-grid">
+                {articles.slice(18, 22).map((a) => <NewsCard key={a.id} article={a} />)}
+              </div>
             </section>
           </div>
           <Sidebar />
@@ -287,7 +337,11 @@ export default function HomePage() {
       <>
         {hero && (
           <Link to={`/article/${hero.slug}`} className="layout-d-hero">
-            <img src={hero.thumbnail_url || ''} alt={hero.title} />
+            {hero.thumbnail_url ? (
+              <img src={hero.thumbnail_url} alt={hero.title} />
+            ) : (
+              <div className="news-card-placeholder" style={{ width: '100%', height: '100%' }} />
+            )}
             <div className="layout-d-hero-overlay">
               <h2>{hero.title}</h2>
               {hero.excerpt && <p>{hero.excerpt}</p>}
@@ -299,7 +353,11 @@ export default function HomePage() {
           <div className="layout-d-scroll">
             {articles.slice(1, 9).map((a) => (
               <Link key={a.id} to={`/article/${a.slug}`} className="layout-d-scroll-card">
-                {a.thumbnail_url && <img src={a.thumbnail_url} alt={a.title} />}
+                {a.thumbnail_url ? (
+                  <img src={a.thumbnail_url} alt={a.title} />
+                ) : (
+                  <div className="news-card-placeholder" style={{ height: '120px' }} />
+                )}
                 <h4 className="line-clamp-2">{a.title}</h4>
               </Link>
             ))}
@@ -310,7 +368,13 @@ export default function HomePage() {
           <div className="home-main">
             <section className="home-section">
               <h3 className="section-title">최신뉴스</h3>
-              <NewsList items={articles.slice(9, 19)} />
+              <NewsList items={articles.slice(9, 21)} />
+            </section>
+            <section className="home-section">
+              <h3 className="section-title">더보기</h3>
+              <div className="top-news-grid">
+                {articles.slice(21, 25).map((a) => <NewsCard key={a.id} article={a} />)}
+              </div>
             </section>
           </div>
           <Sidebar />
@@ -328,7 +392,11 @@ export default function HomePage() {
         <div className="layout-e-top">
           {hero && (
             <Link to={`/article/${hero.slug}`} className="layout-e-hero">
-              {hero.thumbnail_url && <img src={hero.thumbnail_url} alt={hero.title} />}
+              {hero.thumbnail_url ? (
+                <img src={hero.thumbnail_url} alt={hero.title} />
+              ) : (
+                <div className="news-card-placeholder" style={{ flex: 1, minHeight: '200px' }} />
+              )}
               <h2>{hero.title}</h2>
               {hero.subtitle && <p className="layout-e-subtitle">{hero.subtitle}</p>}
             </Link>
@@ -357,7 +425,7 @@ export default function HomePage() {
               </div>
             </section>
             <section className="home-section">
-              <NewsList items={articles.slice(12, 20)} />
+              <NewsList items={articles.slice(12, 24)} />
             </section>
           </div>
           <Sidebar />
@@ -375,7 +443,11 @@ export default function HomePage() {
         <div className="layout-f-mosaic">
           {hero && (
             <Link to={`/article/${hero.slug}`} className="layout-f-big">
-              {hero.thumbnail_url && <img src={hero.thumbnail_url} alt={hero.title} />}
+              {hero.thumbnail_url ? (
+                <img src={hero.thumbnail_url} alt={hero.title} />
+              ) : (
+                <div className="news-card-placeholder" style={{ width: '100%', height: '100%' }} />
+              )}
               <div className="layout-f-overlay">
                 <h2>{hero.title}</h2>
               </div>
@@ -383,7 +455,11 @@ export default function HomePage() {
           )}
           {articles.slice(1, 3).map((a) => (
             <Link key={a.id} to={`/article/${a.slug}`} className="layout-f-med">
-              {a.thumbnail_url && <img src={a.thumbnail_url} alt={a.title} />}
+              {a.thumbnail_url ? (
+                <img src={a.thumbnail_url} alt={a.title} />
+              ) : (
+                <div className="news-card-placeholder" style={{ width: '100%', height: '100%' }} />
+              )}
               <div className="layout-f-overlay">
                 <h3 className="line-clamp-2">{a.title}</h3>
               </div>
@@ -401,7 +477,13 @@ export default function HomePage() {
           <div className="home-main">
             <section className="home-section">
               <h3 className="section-title">최신뉴스</h3>
-              <NewsList items={articles.slice(6, 16)} />
+              <NewsList items={articles.slice(6, 18)} />
+            </section>
+            <section className="home-section">
+              <h3 className="section-title">더보기</h3>
+              <div className="top-news-grid">
+                {articles.slice(18, 22).map((a) => <NewsCard key={a.id} article={a} />)}
+              </div>
             </section>
           </div>
           <Sidebar />
