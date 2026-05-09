@@ -9,6 +9,8 @@ interface Stats {
   totalArticles: number;
   pendingArticles: number;
   totalComments: number;
+  todayVisitors: number;
+  totalViews: number;
 }
 
 type LayoutType = 'auto' | 'layout-a' | 'layout-b' | 'layout-c' | 'layout-d' | 'layout-e' | 'layout-f';
@@ -30,6 +32,8 @@ export default function AdminDashboard() {
     totalArticles: 0,
     pendingArticles: 0,
     totalComments: 0,
+    todayVisitors: 0,
+    totalViews: 0,
   });
   const [recentArticles, setRecentArticles] = useState<any[]>([]);
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>('auto');
@@ -45,18 +49,29 @@ export default function AdminDashboard() {
   async function fetchStats() {
     const today = new Date().toISOString().split('T')[0];
 
-    const [totalRes, todayRes, pendingRes, commentsRes] = await Promise.all([
+    const [totalRes, todayRes, pendingRes, commentsRes, todayVisitorRes, totalViewsRes] = await Promise.all([
       supabase.from('joongang_articles').select('id', { count: 'exact', head: true }),
       supabase.from('joongang_articles').select('id', { count: 'exact', head: true }).gte('created_at', today),
       supabase.from('joongang_articles').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
       supabase.from('joongang_comments').select('id', { count: 'exact', head: true }),
+      supabase.from('joongang_visitor_stats').select('page_views').eq('stat_date', today),
+      supabase.from('joongang_articles').select('view_count').eq('status', 'published'),
     ]);
+
+    const todayVisitors = todayVisitorRes.data
+      ? todayVisitorRes.data.reduce((sum: number, r: { page_views: number }) => sum + (r.page_views || 0), 0)
+      : 0;
+    const totalViews = totalViewsRes.data
+      ? totalViewsRes.data.reduce((sum: number, r: { view_count: number }) => sum + (r.view_count || 0), 0)
+      : 0;
 
     setStats({
       totalArticles: totalRes.count || 0,
       todayArticles: todayRes.count || 0,
       pendingArticles: pendingRes.count || 0,
       totalComments: commentsRes.count || 0,
+      todayVisitors,
+      totalViews,
     });
   }
 
@@ -151,6 +166,14 @@ export default function AdminDashboard() {
         <div className="stat-card">
           <div className="stat-number">{stats.totalComments}</div>
           <div className="stat-label">총 댓글</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{stats.todayVisitors.toLocaleString()}</div>
+          <div className="stat-label">오늘 방문자</div>
+        </div>
+        <div className="stat-card">
+          <div className="stat-number">{stats.totalViews.toLocaleString()}</div>
+          <div className="stat-label">총 조회수</div>
         </div>
       </div>
 

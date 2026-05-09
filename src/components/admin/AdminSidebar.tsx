@@ -21,6 +21,7 @@ const menuItems: MenuGroup[] = [
     icon: '📊',
     items: [
       { path: '/admin', label: '대시보드', icon: '📊' },
+      { path: '/admin/stats', label: '방문 통계', icon: '📈' },
     ],
   },
   {

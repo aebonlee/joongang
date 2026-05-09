@@ -34,6 +34,7 @@ import NewswireManager from '@/pages/admin/distribution/NewswireManager';
 import SiteSettings from '@/pages/admin/settings/SiteSettings';
 import MemberManager from '@/pages/admin/members/MemberManager';
 import AdBilling from '@/pages/admin/ads/AdBilling';
+import VisitorStats from '@/pages/admin/VisitorStats';
 
 export default function App() {
   return (
@@ -61,6 +62,7 @@ export default function App() {
         }
       >
         <Route index element={<AdminDashboard />} />
+        <Route path="stats" element={<VisitorStats />} />
         {/* 뉴스관리 */}
         <Route path="articles" element={<ArticleList />} />
         <Route path="articles/write" element={<ArticleEditor />} />

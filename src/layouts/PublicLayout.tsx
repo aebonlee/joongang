@@ -1,8 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from '@/components/public/Header';
 import { Footer } from '@/components/public/Footer';
+import { usePageTracker } from '@/hooks/usePageTracker';
 
 export function PublicLayout() {
+  usePageTracker();
+
   return (
     <div className="public-layout">
       <Header />
