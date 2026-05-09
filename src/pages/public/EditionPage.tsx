@@ -3,24 +3,10 @@ import { supabase } from '@/lib/supabase';
 import type { Edition } from '@/types';
 import './EditionPage.css';
 
-// 판별 코드 → 한글 라벨
-const EDITION_LABELS: Record<string, string> = {
-  AA: 'LA판 (일간)',
-  AE: '동부판',
-  AL: 'LA 지역',
-  AW: '워싱턴판',
-  AY: '일요판',
-  BT: '본지',
-  B: 'B섹션',
-  G: 'G섹션',
-};
-
 export default function EditionPage() {
   const [editions, setEditions] = useState<Edition[]>([]);
   const [dates, setDates] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState('');
-  const [selectedCode, setSelectedCode] = useState('');
-  const [availableCodes, setAvailableCodes] = useState<string[]>([]);
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -30,15 +16,9 @@ export default function EditionPage() {
 
   useEffect(() => {
     if (selectedDate) {
-      fetchEditionsForDate(selectedDate);
+      fetchAllPages(selectedDate);
     }
   }, [selectedDate]);
-
-  useEffect(() => {
-    if (selectedDate && selectedCode) {
-      fetchPages(selectedDate, selectedCode);
-    }
-  }, [selectedDate, selectedCode]);
 
   async function fetchAvailableDates() {
     const { data } = await supabase
@@ -56,31 +36,34 @@ export default function EditionPage() {
     setLoading(false);
   }
 
-  async function fetchEditionsForDate(date: string) {
-    const { data } = await supabase
-      .from('joongang_editions')
-      .select('edition_code')
-      .eq('edition_date', date);
-
-    if (data) {
-      const codes = [...new Set(data.map((d) => d.edition_code))].sort();
-      setAvailableCodes(codes);
-      if (codes.length > 0) {
-        setSelectedCode(codes[0]);
-      }
-    }
-  }
-
-  async function fetchPages(date: string, code: string) {
+  async function fetchAllPages(date: string) {
+    // A섹션 우선, 같은 page_number가 있으면 A섹션 것만 사용
     const { data } = await supabase
       .from('joongang_editions')
       .select('*')
       .eq('edition_date', date)
-      .eq('edition_code', code)
       .order('page_number', { ascending: true });
 
     if (data) {
-      setEditions(data as Edition[]);
+      // page_number 기준으로 중복 제거 (A섹션 우선)
+      const pageMap = new Map<number, Edition>();
+      // A섹션 먼저 등록
+      for (const edition of data as Edition[]) {
+        if (edition.edition_code === 'A') {
+          pageMap.set(edition.page_number, edition);
+        }
+      }
+      // 나머지 섹션 — A섹션에 없는 페이지만 추가
+      for (const edition of data as Edition[]) {
+        if (edition.edition_code !== 'A' && !pageMap.has(edition.page_number)) {
+          pageMap.set(edition.page_number, edition);
+        }
+      }
+
+      const merged = [...pageMap.values()].sort(
+        (a, b) => a.page_number - b.page_number
+      );
+      setEditions(merged);
     }
   }
 
@@ -116,13 +99,16 @@ export default function EditionPage() {
       </div>
 
       <div className="container edition-container">
-        {/* 날짜/판 선택 */}
+        {/* 날짜 선택 */}
         <div className="edition-controls">
           <div className="control-group">
             <label>날짜 선택</label>
             <select
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                setSelectedPdf(null);
+              }}
             >
               {dates.map((date) => (
                 <option key={date} value={date}>
@@ -131,20 +117,8 @@ export default function EditionPage() {
               ))}
             </select>
           </div>
-
-          <div className="control-group">
-            <label>판 선택</label>
-            <div className="edition-tabs">
-              {availableCodes.map((code) => (
-                <button
-                  key={code}
-                  className={`edition-tab ${selectedCode === code ? 'active' : ''}`}
-                  onClick={() => setSelectedCode(code)}
-                >
-                  {EDITION_LABELS[code] || code}
-                </button>
-              ))}
-            </div>
+          <div className="edition-count">
+            총 {editions.length}면
           </div>
         </div>
 
@@ -180,9 +154,7 @@ export default function EditionPage() {
             {selectedPdf && (
               <div className="edition-viewer">
                 <div className="viewer-header">
-                  <h3>
-                    {formatDate(selectedDate)} — {EDITION_LABELS[selectedCode] || selectedCode}
-                  </h3>
+                  <h3>{formatDate(selectedDate)}</h3>
                   <a
                     href={selectedPdf}
                     target="_blank"

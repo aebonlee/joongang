@@ -1,7 +1,7 @@
 /* 지면보기 페이지 */
 .edition-page .page-header {
   background: #1B1B1B;
-  padding: 40px 0;
+  padding: calc(var(--nav-height) + 60px) 0 60px;
   text-align: center;
   color: #fff;
 }
@@ -19,7 +19,7 @@
 }
 
 .edition-container {
-  padding-top: 30px;
+  padding-top: 60px;
   padding-bottom: 60px;
 }
 
@@ -81,6 +81,14 @@
   background: var(--primary-color);
   border-color: var(--primary-color);
   color: #fff;
+}
+
+.edition-count {
+  font-size: 14px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  align-self: flex-end;
+  padding-bottom: 8px;
 }
 
 /* 빈 상태 */
@@ -179,7 +187,7 @@
 
 .pdf-viewer {
   width: 100%;
-  height: 80vh;
+  height: 100vh;
   border: 1px solid var(--border-color);
   border-radius: 8px;
 }
@@ -202,6 +210,6 @@
   }
 
   .pdf-viewer {
-    height: 60vh;
+    height: 80vh;
   }
 }
