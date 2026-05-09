@@ -26,7 +26,7 @@ const LAYOUT_OPTIONS: { value: LayoutType; label: string; desc: string }[] = [
 ];
 
 export default function AdminDashboard() {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isEditor } = useAuth();
   const [stats, setStats] = useState<Stats>({
     todayArticles: 0,
     totalArticles: 0,
@@ -163,18 +163,22 @@ export default function AdminDashboard() {
           <div className="stat-number">{stats.pendingArticles}</div>
           <div className="stat-label">출력 대기</div>
         </div>
-        <div className="stat-card">
-          <div className="stat-number">{stats.totalComments}</div>
-          <div className="stat-label">총 댓글</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-number">{stats.todayVisitors.toLocaleString()}</div>
-          <div className="stat-label">오늘 방문자</div>
-        </div>
-        <div className="stat-card">
-          <div className="stat-number">{stats.totalViews.toLocaleString()}</div>
-          <div className="stat-label">총 조회수</div>
-        </div>
+        {isEditor && (
+          <>
+            <div className="stat-card">
+              <div className="stat-number">{stats.totalComments}</div>
+              <div className="stat-label">총 댓글</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.todayVisitors.toLocaleString()}</div>
+              <div className="stat-label">오늘 방문자</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-number">{stats.totalViews.toLocaleString()}</div>
+              <div className="stat-label">총 조회수</div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Quick actions */}
@@ -185,9 +189,11 @@ export default function AdminDashboard() {
         <Link to="/admin/articles" className="btn btn-outline">
           기사 목록
         </Link>
-        <Link to="/admin/ads" className="btn btn-outline">
-          광고 관리
-        </Link>
+        {isEditor && (
+          <Link to="/admin/ads" className="btn btn-outline">
+            광고 관리
+          </Link>
+        )}
       </div>
 
       {/* Layout selector */}

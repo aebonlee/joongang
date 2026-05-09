@@ -81,14 +81,39 @@ const menuItems: MenuGroup[] = [
   },
 ];
 
+// 역할별 접근 가능 메뉴 그룹
+const REPORTER_GROUPS = ['대시보드', '뉴스관리'];
+const EDITOR_GROUPS = ['대시보드', '뉴스관리', '뉴스레터', '콘텐츠', '광고관리', '회원관리'];
+// superadmin: 모든 그룹
+
+// 편집장에게 숨길 개별 메뉴 항목
+const ADMIN_ONLY_ITEMS = ['/admin/staff', '/admin/settings'];
+
 export function AdminSidebar() {
   const location = useLocation();
-  const { staff } = useAuth();
+  const { staff, isAdmin, isEditor } = useAuth();
+
+  // 역할별 메뉴 필터링
+  const filteredMenuItems = menuItems
+    .filter((group) => {
+      if (isAdmin) return true;
+      if (isEditor) return EDITOR_GROUPS.includes(group.group);
+      return REPORTER_GROUPS.includes(group.group);
+    })
+    .map((group) => {
+      if (isAdmin) return group;
+      // 편집장: 관리자 전용 항목 제외
+      return {
+        ...group,
+        items: group.items.filter((item) => !ADMIN_ONLY_ITEMS.includes(item.path)),
+      };
+    })
+    .filter((group) => group.items.length > 0);
 
   // Determine which groups should be open initially based on current path
   const getInitialOpenGroups = () => {
     const open: Record<string, boolean> = {};
-    menuItems.forEach((group) => {
+    filteredMenuItems.forEach((group) => {
       const isActive = group.items.some((item) => location.pathname === item.path);
       open[group.group] = isActive;
     });
@@ -121,12 +146,14 @@ export function AdminSidebar() {
         </div>
         <div className="user-info">
           <span className="user-name">{staff?.name || '관리자'}</span>
-          <span className="user-role">{staff?.role || 'staff'}</span>
+          <span className="user-role">
+            {staff?.role === 'superadmin' ? '최고관리자' : staff?.role === 'editor' ? '편집장' : staff?.role === 'reporter' ? '기자' : 'staff'}
+          </span>
         </div>
       </div>
 
       <nav className="sidebar-nav">
-        {menuItems.map((group) => {
+        {filteredMenuItems.map((group) => {
           const isOpen = openGroups[group.group] ?? false;
           const hasActiveItem = group.items.some((item) => location.pathname === item.path);
 

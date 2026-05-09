@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { PublicLayout } from '@/layouts/PublicLayout';
 import { AdminLayout } from '@/layouts/AdminLayout';
-import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { ProtectedRoute, EditorRoute } from '@/components/ProtectedRoute';
 
 // Public Pages
 import HomePage from '@/pages/public/HomePage';
@@ -62,30 +62,30 @@ export default function App() {
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="stats" element={<VisitorStats />} />
-        {/* 뉴스관리 */}
+        <Route path="stats" element={<EditorRoute><VisitorStats /></EditorRoute>} />
+        {/* 뉴스관리 — 기자 이상 접근 가능 */}
         <Route path="articles" element={<ArticleList />} />
         <Route path="articles/write" element={<ArticleEditor />} />
         <Route path="articles/:id/edit" element={<ArticleEditor />} />
         <Route path="articles/pending" element={<PendingArticles />} />
         <Route path="articles/photo" element={<PhotoArticles />} />
         <Route path="articles/video" element={<VideoArticles />} />
-        {/* 뉴스레터 */}
-        <Route path="newsletter" element={<NewsletterManager />} />
-        {/* 콘텐츠 */}
-        <Route path="tips" element={<TipManager />} />
-        <Route path="comments" element={<CommentManager />} />
-        <Route path="press-release" element={<PressRelease />} />
-        <Route path="newswire" element={<NewswireManager />} />
-        {/* 광고관리 */}
-        <Route path="ads" element={<AdManager />} />
-        <Route path="ads/slots" element={<AdSlotManager />} />
-        <Route path="ads/advertisers" element={<AdvertiserManager />} />
-        <Route path="ads/templates" element={<AdTemplateManager />} />
+        {/* 뉴스레터 — 편집장 이상 */}
+        <Route path="newsletter" element={<EditorRoute><NewsletterManager /></EditorRoute>} />
+        {/* 콘텐츠 — 편집장 이상 */}
+        <Route path="tips" element={<EditorRoute><TipManager /></EditorRoute>} />
+        <Route path="comments" element={<EditorRoute><CommentManager /></EditorRoute>} />
+        <Route path="press-release" element={<EditorRoute><PressRelease /></EditorRoute>} />
+        <Route path="newswire" element={<EditorRoute><NewswireManager /></EditorRoute>} />
+        {/* 광고관리 — 편집장 이상 */}
+        <Route path="ads" element={<EditorRoute><AdManager /></EditorRoute>} />
+        <Route path="ads/slots" element={<EditorRoute><AdSlotManager /></EditorRoute>} />
+        <Route path="ads/advertisers" element={<EditorRoute><AdvertiserManager /></EditorRoute>} />
+        <Route path="ads/templates" element={<EditorRoute><AdTemplateManager /></EditorRoute>} />
         <Route path="ads/billing" element={<AdBilling />} />
-        {/* 회원관리 */}
-        <Route path="members" element={<MemberManager />} />
-        {/* 설정 */}
+        {/* 회원관리 — 편집장 이상 */}
+        <Route path="members" element={<EditorRoute><MemberManager /></EditorRoute>} />
+        {/* 설정 — 기존 가드 유지 (superadmin 전용) */}
         <Route path="sections" element={<SectionManager />} />
         <Route path="staff" element={<StaffManager />} />
         <Route path="settings" element={<SiteSettings />} />
