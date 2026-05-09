@@ -65,7 +65,7 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
       <div
         className={`ad-banner ${className}`}
         onClick={handleClick}
-        style={{ cursor: 'pointer' }}
+        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%' }}
         dangerouslySetInnerHTML={{ __html: ad.html_content }}
       />
     );
@@ -73,7 +73,7 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
 
   // 이미지 광고
   return (
-    <div className={`ad-banner ${className}`}>
+    <div className={`ad-banner ${className}`} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
       <a
         href={ad.link_url || '#'}
         target={ad.open_new_tab ? '_blank' : '_self'}
