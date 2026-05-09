@@ -1,5 +1,12 @@
 .ad-banner {
   margin: 16px 0;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.ad-banner a {
+  display: block;
 }
 
 .ad-banner-img {

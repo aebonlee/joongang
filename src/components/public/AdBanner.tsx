@@ -74,10 +74,7 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
 
   // 이미지 광고
   return (
-    <div
-      className={`ad-banner ${className}`}
-      style={{ textAlign: 'center' }}
-    >
+    <div className={`ad-banner ${className}`}>
       <a
         href={ad.link_url || '#'}
         target={ad.open_new_tab ? '_blank' : '_self'}

@@ -5,6 +5,18 @@ import { AdBanner } from '@/components/public/AdBanner';
 import type { Article } from '@/types';
 import './HomePage.css';
 
+const PLACEHOLDER_SRC = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#f3f4f6" width="400" height="300"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="14" font-family="sans-serif">이미지 없음</text></svg>'
+);
+
+function handleImgError(e: React.SyntheticEvent<HTMLImageElement>) {
+  const img = e.currentTarget;
+  if (img.src !== PLACEHOLDER_SRC) {
+    img.src = PLACEHOLDER_SRC;
+    img.style.objectFit = 'contain';
+  }
+}
+
 // 6가지 레이아웃 타입
 type LayoutType = 'layout-a' | 'layout-b' | 'layout-c' | 'layout-d' | 'layout-e' | 'layout-f';
 
@@ -99,7 +111,7 @@ export default function HomePage() {
               {photoArticles.map((a) => (
                 <Link key={a.id} to={`/article/${a.slug}`} className="photo-news-item">
                   {a.thumbnail_url ? (
-                    <img src={a.thumbnail_url} alt={a.title} />
+                    <img src={a.thumbnail_url} alt={a.title} onError={handleImgError} />
                   ) : (
                     <div className="news-card-placeholder photo-news-placeholder" />
                   )}
@@ -145,7 +157,7 @@ export default function HomePage() {
       <Link to={`/article/${article.slug}`} className="news-card">
         <div className="news-card-image">
           {article.thumbnail_url ? (
-            <img src={article.thumbnail_url} alt={article.title} />
+            <img src={article.thumbnail_url} alt={article.title} onError={handleImgError} />
           ) : (
             <div className="news-card-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -170,7 +182,7 @@ export default function HomePage() {
       <Link to={`/article/${article.slug}`} className="headline-card">
         <div className="headline-image">
           {article.thumbnail_url ? (
-            <img src={article.thumbnail_url} alt={article.title} />
+            <img src={article.thumbnail_url} alt={article.title} onError={handleImgError} />
           ) : (
             <div className="news-card-placeholder headline-placeholder">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -246,7 +258,7 @@ export default function HomePage() {
             <Link to={`/article/${hero.slug}`} className="layout-b-main-card">
               <div className="layout-b-main-image">
                 {hero.thumbnail_url ? (
-                  <img src={hero.thumbnail_url} alt={hero.title} />
+                  <img src={hero.thumbnail_url} alt={hero.title} onError={handleImgError} />
                 ) : (
                   <div className="news-card-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Z"/><path d="m3 16 5-5 4 4 4-4 5 5"/><circle cx="8.5" cy="8.5" r="1.5"/></svg></div>
                 )}
@@ -259,7 +271,7 @@ export default function HomePage() {
             {articles.slice(1, 6).map((a) => (
               <Link key={a.id} to={`/article/${a.slug}`} className="layout-b-side-item">
                 {a.thumbnail_url ? (
-                  <img src={a.thumbnail_url} alt={a.title} />
+                  <img src={a.thumbnail_url} alt={a.title} onError={handleImgError} />
                 ) : (
                   <div className="layout-b-side-placeholder">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -338,7 +350,7 @@ export default function HomePage() {
         {hero && (
           <Link to={`/article/${hero.slug}`} className="layout-d-hero">
             {hero.thumbnail_url ? (
-              <img src={hero.thumbnail_url} alt={hero.title} />
+              <img src={hero.thumbnail_url} alt={hero.title} onError={handleImgError} />
             ) : (
               <div className="news-card-placeholder" style={{ width: '100%', height: '100%' }} />
             )}
@@ -354,7 +366,7 @@ export default function HomePage() {
             {articles.slice(1, 9).map((a) => (
               <Link key={a.id} to={`/article/${a.slug}`} className="layout-d-scroll-card">
                 {a.thumbnail_url ? (
-                  <img src={a.thumbnail_url} alt={a.title} />
+                  <img src={a.thumbnail_url} alt={a.title} onError={handleImgError} />
                 ) : (
                   <div className="news-card-placeholder" style={{ height: '120px' }} />
                 )}
@@ -393,7 +405,7 @@ export default function HomePage() {
           {hero && (
             <Link to={`/article/${hero.slug}`} className="layout-e-hero">
               {hero.thumbnail_url ? (
-                <img src={hero.thumbnail_url} alt={hero.title} />
+                <img src={hero.thumbnail_url} alt={hero.title} onError={handleImgError} />
               ) : (
                 <div className="news-card-placeholder" style={{ flex: 1, minHeight: '200px' }} />
               )}
@@ -444,7 +456,7 @@ export default function HomePage() {
           {hero && (
             <Link to={`/article/${hero.slug}`} className="layout-f-big">
               {hero.thumbnail_url ? (
-                <img src={hero.thumbnail_url} alt={hero.title} />
+                <img src={hero.thumbnail_url} alt={hero.title} onError={handleImgError} />
               ) : (
                 <div className="news-card-placeholder" style={{ width: '100%', height: '100%' }} />
               )}
@@ -456,7 +468,7 @@ export default function HomePage() {
           {articles.slice(1, 3).map((a) => (
             <Link key={a.id} to={`/article/${a.slug}`} className="layout-f-med">
               {a.thumbnail_url ? (
-                <img src={a.thumbnail_url} alt={a.title} />
+                <img src={a.thumbnail_url} alt={a.title} onError={handleImgError} />
               ) : (
                 <div className="news-card-placeholder" style={{ width: '100%', height: '100%' }} />
               )}

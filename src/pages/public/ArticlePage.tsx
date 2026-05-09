@@ -6,6 +6,18 @@ import { CommentSection } from '@/components/public/CommentSection';
 import type { Article } from '@/types';
 import './ArticlePage.css';
 
+const PLACEHOLDER_SRC = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300"><rect fill="#f3f4f6" width="400" height="300"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#9ca3af" font-size="14" font-family="sans-serif">이미지 없음</text></svg>'
+);
+
+function handleImgError(e: React.SyntheticEvent<HTMLImageElement>) {
+  const img = e.currentTarget;
+  if (img.src !== PLACEHOLDER_SRC) {
+    img.src = PLACEHOLDER_SRC;
+    img.style.objectFit = 'contain';
+  }
+}
+
 export default function ArticlePage() {
   const { slug } = useParams();
   const [article, setArticle] = useState<Article | null>(null);
@@ -141,7 +153,7 @@ export default function ArticlePage() {
           {/* Thumbnail */}
           {article.thumbnail_url && (
             <figure className="article-thumbnail">
-              <img src={article.thumbnail_url} alt={article.title} />
+              <img src={article.thumbnail_url} alt={article.title} onError={handleImgError} />
               {article.thumbnail_caption && (
                 <figcaption>{article.thumbnail_caption}</figcaption>
               )}
