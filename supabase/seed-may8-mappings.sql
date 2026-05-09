@@ -4,7 +4,7 @@
 
 -- article 47
 INSERT INTO joongang_article_sections (article_id, section_id, is_primary, sort_order)
-SELECT id, '79bdb66e-5e01-4491-bffe-94b50c14633c', true, 0 FROM joongang_articles WHERE slug = 'annandale-seoul-blvd-sign-2026'
+SELECT id, '79bdb66e-5e01-4491-bffe-94b50a14633c', true, 0 FROM joongang_articles WHERE slug = 'annandale-seoul-blvd-sign-2026'
 ON CONFLICT DO NOTHING;
 
 -- article 48
