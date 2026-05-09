@@ -53,6 +53,13 @@ const menuItems: MenuGroup[] = [
     ],
   },
   {
+    group: '지면관리',
+    icon: '📄',
+    items: [
+      { path: '/admin/editions', label: '지면 관리', icon: '📄' },
+    ],
+  },
+  {
     group: '광고관리',
     icon: '📢',
     items: [
@@ -83,7 +90,7 @@ const menuItems: MenuGroup[] = [
 
 // 역할별 접근 가능 메뉴 그룹
 const REPORTER_GROUPS = ['대시보드', '뉴스관리'];
-const EDITOR_GROUPS = ['대시보드', '뉴스관리', '뉴스레터', '콘텐츠', '광고관리', '회원관리'];
+const EDITOR_GROUPS = ['대시보드', '뉴스관리', '뉴스레터', '콘텐츠', '지면관리', '광고관리', '회원관리'];
 // superadmin: 모든 그룹
 
 // 편집장에게 숨길 개별 메뉴 항목

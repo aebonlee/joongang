@@ -9,6 +9,7 @@ import SectionPage from '@/pages/public/SectionPage';
 import ArticlePage from '@/pages/public/ArticlePage';
 import SearchPage from '@/pages/public/SearchPage';
 import TipPage from '@/pages/public/TipPage';
+import EditionPage from '@/pages/public/EditionPage';
 import LoginPage from '@/pages/auth/LoginPage';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import AuthCallbackPage from '@/pages/auth/AuthCallbackPage';
@@ -35,6 +36,7 @@ import SiteSettings from '@/pages/admin/settings/SiteSettings';
 import MemberManager from '@/pages/admin/members/MemberManager';
 import AdBilling from '@/pages/admin/ads/AdBilling';
 import VisitorStats from '@/pages/admin/VisitorStats';
+import EditionManager from '@/pages/admin/editions/EditionManager';
 
 export default function App() {
   return (
@@ -47,6 +49,7 @@ export default function App() {
         <Route path="article/:slug" element={<ArticlePage />} />
         <Route path="search" element={<SearchPage />} />
         <Route path="tip" element={<TipPage />} />
+        <Route path="edition" element={<EditionPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="auth/callback" element={<AuthCallbackPage />} />
@@ -85,6 +88,8 @@ export default function App() {
         <Route path="ads/billing" element={<AdBilling />} />
         {/* 회원관리 — 편집장 이상 */}
         <Route path="members" element={<EditorRoute><MemberManager /></EditorRoute>} />
+        {/* 지면관리 — 편집장 이상 */}
+        <Route path="editions" element={<EditorRoute><EditionManager /></EditorRoute>} />
         {/* 설정 — 기존 가드 유지 (superadmin 전용) */}
         <Route path="sections" element={<SectionManager />} />
         <Route path="staff" element={<StaffManager />} />

@@ -281,3 +281,16 @@ export interface Tip {
   assigned_to: string | null;
   created_at: string;
 }
+
+// --- Editions (지면보기) ---
+export interface Edition {
+  id: string;
+  edition_date: string;        // YYYY-MM-DD
+  edition_code: string;        // AA, AE, AW, BT, AY, AL, G, B 등
+  edition_label: string;       // "LA판", "워싱턴판", "일요판" 등
+  page_number: number;
+  pdf_url: string;             // Supabase Storage URL
+  thumbnail_url: string | null;
+  file_size: number | null;
+  created_at: string;
+}
