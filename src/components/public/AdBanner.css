@@ -1,17 +1,15 @@
 .ad-banner {
   margin: 16px 0;
-  display: flex;
-  justify-content: center;
-  width: 100%;
   text-align: center;
 }
 
-.ad-banner * {
-  text-align: center;
-}
-
-.ad-banner-img {
+.ad-banner a {
   display: block;
+  text-align: center;
+}
+
+.ad-banner img.ad-banner-img {
+  display: inline-block;
   max-width: 100%;
   height: auto;
   border-radius: 4px;

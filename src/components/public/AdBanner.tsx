@@ -61,20 +61,18 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
 
   // HTML 광고
   if (ad.html_content) {
-    const wrappedHtml = `<div style="text-align:center;width:100%">${ad.html_content}</div>`;
     return (
       <div
         className={`ad-banner ${className}`}
         onClick={handleClick}
-        style={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%' }}
-        dangerouslySetInnerHTML={{ __html: wrappedHtml }}
+        dangerouslySetInnerHTML={{ __html: ad.html_content }}
       />
     );
   }
 
   // 이미지 광고
   return (
-    <div className={`ad-banner ${className}`} style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+    <div className={`ad-banner ${className}`}>
       <a
         href={ad.link_url || '#'}
         target={ad.open_new_tab ? '_blank' : '_self'}
