@@ -1,6 +1,6 @@
 # Joongang 인터넷신문 플랫폼 — 개발 이력서
 
-> **작성일**: 2026-05-06
+> **작성일**: 2026-05-06 (업데이트: 2026-05-09)
 > **프로젝트명**: joongang
 > **경로**: `D:\dreamit-web\joongang\`
 > **배포 URL**: https://joongang.dreamitbiz.com
@@ -527,7 +527,71 @@ npm run deploy   # gh-pages -d dist
 
 ---
 
-## 14. 향후 개발 예정 (Phase 2+)
+## 14. 2026-05-09 업데이트 — 관리자 권한, 지면보기, 이미지 수정
+
+### 14.1 관리자 권한 3단계 분리
+
+| 역할 | 대시보드 | 메뉴 접근 | 비고 |
+|------|----------|-----------|------|
+| 기자 (reporter) | 기사 통계 3개만 | 대시보드, 뉴스관리만 | |
+| 편집장 (editor) | 전체 통계 6개 | 뉴스/콘텐츠/지면/광고/회원 | 스태프/설정 제외 |
+| 최고관리자 (superadmin) | 전체 | 전체 | |
+
+**수정 파일**:
+- `src/components/ProtectedRoute.tsx` — `EditorRoute` 가드 컴포넌트
+- `src/components/admin/AdminSidebar.tsx` — `REPORTER_GROUPS`, `EDITOR_GROUPS`, `ADMIN_ONLY_ITEMS`
+- `src/pages/admin/AdminDashboard.tsx` — `isEditor` 분기
+- `src/App.tsx` — `EditorRoute` 래퍼
+
+### 14.2 지면보기 기능
+
+신문 PDF 지면을 날짜/판별로 조회.
+
+**공개 페이지** (`/edition`): 날짜 → 판 선택 → 페이지 그리드 → PDF iframe 뷰어
+**관리자 페이지** (`/admin/editions`): PDF 다중 업로드, 개별/날짜별 삭제
+
+**Supabase**:
+- 테이블: `joongang_editions` (RLS: SELECT 공개, CUD 인증만)
+- Storage: `joongang-editions` 버킷 (Public, PDF, 50MB)
+
+**수정 파일**:
+- `src/pages/public/EditionPage.tsx`, `EditionPage.css`
+- `src/pages/admin/editions/EditionManager.tsx`
+- `src/types/index.ts` — `Edition` 인터페이스
+- `supabase-editions-setup.sql` — 테이블+스토리지+RLS SQL
+
+### 14.3 공개 네비게이션 메뉴
+
+헤더에 지면보기(`/edition`) + 기사제보(`/tip`) 메뉴 추가.
+- `src/components/public/Header.tsx` — nav 항목
+- `src/components/public/Header.css` — `.nav-divider`
+- `src/utils/translations.ts` — `nav.edition`, `nav.tip` (한/영)
+
+### 14.4 기사 썸네일 이미지 수정
+
+- **null 썸네일 7건**: `scripts/fix-thumbnails.mjs` — 키워드 기반 Unsplash 매칭
+- **깨진 URL 10건**: `scripts/check-broken-images.mjs` — HEAD 체크 + 교체
+
+### 14.5 지면보기 샘플 데이터 (5/1~5/9)
+
+- 워싱턴판(AW) + 동부판(AE), 총 110개 PDF
+- `scripts/seed-editions.mjs` — PDF 생성 + Storage 업로드
+- `scripts/seed-editions.sql` — DB INSERT (Dashboard 실행)
+
+### 14.6 커밋 이력 (2026-05-09)
+
+| 해시 | 메시지 |
+|------|--------|
+| `955c20d` | 역할별 관리자 권한 분리 |
+| `f111c42` | 지면보기 기능 추가 |
+| `25b71b0` | 썸네일 누락 기사 일괄 수정 스크립트 |
+| `e00d4fc` | 공개 네비게이션에 지면보기·기사제보 메뉴 |
+| `ffef1ef` | 깨진 썸네일 URL 검사·수정 스크립트 |
+| `96952c5` | 지면보기 샘플 데이터 시드 스크립트 |
+
+---
+
+## 15. 향후 개발 예정 (Phase 2+)
 
 | 기능 | 설명 | 우선순위 |
 |------|------|----------|
