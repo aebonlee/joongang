@@ -4,6 +4,8 @@ export const translations: Record<string, Record<string, unknown>> = {
       home: '홈',
       search: '검색',
       searchPlaceholder: '검색어를 입력하세요',
+      edition: '지면보기',
+      tip: '기사제보',
     },
     header: {
       seoul: '서울',
@@ -89,6 +91,8 @@ export const translations: Record<string, Record<string, unknown>> = {
       home: 'Home',
       search: 'Search',
       searchPlaceholder: 'Search articles...',
+      edition: 'Print Edition',
+      tip: 'News Tips',
     },
     header: {
       seoul: 'Seoul',

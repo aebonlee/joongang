@@ -163,6 +163,15 @@
   color: #fff;
 }
 
+.nav-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(255, 255, 255, 0.2);
+  align-self: center;
+  margin: 0 4px;
+  list-style: none;
+}
+
 .mobile-menu-btn {
   color: #fff;
   padding: 12px;
@@ -209,5 +218,9 @@
   .nav-item a {
     padding: 14px 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .nav-divider {
+    display: none;
   }
 }

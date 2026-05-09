@@ -180,6 +180,13 @@ export function Header() {
                 <Link to={`/section/${section.slug}`}>{section.name}</Link>
               </li>
             ))}
+            <li className="nav-divider" />
+            <li className="nav-item">
+              <Link to="/edition">{t('nav.edition')}</Link>
+            </li>
+            <li className="nav-item">
+              <Link to="/tip">{t('nav.tip')}</Link>
+            </li>
           </ul>
         </div>
       </nav>
