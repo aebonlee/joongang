@@ -1,7 +1,7 @@
 /* 지면보기 페이지 */
 .edition-page .page-header {
-  background: var(--hero-bg);
-  padding: calc(var(--nav-height) + 60px) 0 60px;
+  background: #1B1B1B;
+  padding: 40px 0;
   text-align: center;
   color: #fff;
 }
@@ -10,11 +10,12 @@
   font-size: 28px;
   font-weight: 700;
   margin-bottom: 8px;
+  color: #fff;
 }
 
 .edition-page .page-header p {
   font-size: 15px;
-  opacity: 0.85;
+  color: #ccc;
 }
 
 .edition-container {
