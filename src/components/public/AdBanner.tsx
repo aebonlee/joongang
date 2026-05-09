@@ -59,15 +59,14 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
   if (!ad) return null;
   if (!ad.image_url && !ad.html_content) return null;
 
-  // HTML 광고: 중간 wrapper 제거 — dangerouslySetInnerHTML을 바깥 div에 직접 적용
+  // HTML 광고
   if (ad.html_content) {
-    const centeredHtml = `<div style="display:flex;justify-content:center;width:100%">${ad.html_content}</div>`;
     return (
       <div
         className={`ad-banner ${className}`}
         onClick={handleClick}
         style={{ cursor: 'pointer' }}
-        dangerouslySetInnerHTML={{ __html: centeredHtml }}
+        dangerouslySetInnerHTML={{ __html: ad.html_content }}
       />
     );
   }
