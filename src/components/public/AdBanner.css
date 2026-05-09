@@ -3,6 +3,11 @@
   display: flex;
   justify-content: center;
   width: 100%;
+  text-align: center;
+}
+
+.ad-banner * {
+  text-align: center;
 }
 
 .ad-banner-img {

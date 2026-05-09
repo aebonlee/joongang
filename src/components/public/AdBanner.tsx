@@ -61,12 +61,13 @@ export function AdBanner({ slotCode, className = '' }: AdBannerProps) {
 
   // HTML 광고
   if (ad.html_content) {
+    const wrappedHtml = `<div style="text-align:center;width:100%">${ad.html_content}</div>`;
     return (
       <div
         className={`ad-banner ${className}`}
         onClick={handleClick}
         style={{ cursor: 'pointer', display: 'flex', justifyContent: 'center', width: '100%' }}
-        dangerouslySetInnerHTML={{ __html: ad.html_content }}
+        dangerouslySetInnerHTML={{ __html: wrappedHtml }}
       />
     );
   }
