@@ -1,525 +1,325 @@
 import { createClient } from '@supabase/supabase-js';
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
+import fs from 'fs';
+import path from 'path';
 
 const supabase = createClient(
   'https://hcmgdztsgjvzcyxyayaj.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjbWdkenRzZ2p2emN5eHlheWFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MzU4ODcsImV4cCI6MjA4NzAxMTg4N30.gznaPzY1l8qDAPsEyYNR9KS7f7VqS3xaw-_2HTSwSZw'
 );
 
+// 폰트 로드
+const fontDir = path.join(import.meta.dirname, 'fonts');
+const fontRegularBytes = fs.readFileSync(path.join(fontDir, 'NotoSansKR-Regular.ttf'));
+const fontBoldBytes = fs.readFileSync(path.join(fontDir, 'NotoSansKR-Bold.ttf'));
+
+// 이미지 로드
+const imgDir = path.join(import.meta.dirname, 'images');
+const imageFiles = ['festival.jpg', 'business.jpg', 'realestate.jpg', 'youth.jpg',
+  'weather.jpg', 'economy.jpg', 'community.jpg', 'education.jpg'];
+const imageBuffers = imageFiles.map(f => {
+  const fp = path.join(imgDir, f);
+  return fs.existsSync(fp) ? fs.readFileSync(fp) : null;
+}).filter(Boolean);
+
 const EDITIONS = [
-  { code: 'AW', label: 'Washington Edition', pages: 8 },
-  { code: 'AE', label: 'East Coast Edition', pages: 6 },
+  { code: 'AW', label: '워싱턴판', pages: 8 },
+  { code: 'AE', label: '동부판', pages: 6 },
 ];
 
 const START = new Date('2026-05-01');
 const END = new Date('2026-05-09');
 
-// 1면 헤드라인 + 본문
+// 1면 헤드라인
 const FRONT_PAGES = [
   {
-    headline: 'Korean Community Spring Festival',
-    subhead: 'Annual celebration draws record attendance in Washington D.C.',
-    body: [
-      'The Korean American community in the greater Washington D.C. area held its annual Spring Festival',
-      'at the National Mall over the weekend, drawing an estimated 15,000 visitors over two days.',
-      '',
-      'The festival featured traditional Korean performances, food vendors from over 30 local Korean',
-      'restaurants, and cultural exhibitions showcasing Korean heritage and modern K-culture.',
-      '',
-      '"This year\'s turnout exceeded all expectations," said festival organizer Kim Sung-ho. "It shows',
-      'how the Korean community continues to grow and thrive in the D.C. metropolitan area."',
-      '',
-      'Highlights included a K-pop dance competition, a hanbok fashion show, and demonstrations of',
-      'traditional Korean martial arts. Local politicians, including several members of Congress,',
-      'attended the opening ceremony to show their support for the Korean American community.',
-      '',
-      'The festival also served as a fundraiser for the Korean American Community Foundation, which',
-      'provides scholarships and social services to Korean Americans throughout the region.',
-    ],
+    headline: '워싱턴 한인사회 봄 축제 개최',
+    subhead: '내셔널몰에서 이틀간 1만5천명 참가... 역대 최대 규모',
+    body: '워싱턴 D.C. 광역 한인사회가 지난 주말 내셔널몰에서 연례 봄 축제를 개최했다. 이틀간 약 1만5천명이 방문해 역대 최대 참가 기록을 세웠다.\n\n축제에는 전통 공연, 30여 한인 식당의 음식 판매, 한국 문화유산과 K-컬처를 소개하는 전시가 마련됐다.\n\n축제 조직위원장 김성호 씨는 "올해 참가 인원이 모든 예상을 뛰어넘었다"며 "D.C. 지역 한인사회가 계속 성장하고 있음을 보여준다"고 말했다.\n\n주요 행사로는 K-팝 댄스 대회, 한복 패션쇼, 전통 무예 시범이 진행됐으며, 연방 의원 여러 명이 개막식에 참석해 한인사회에 대한 지지를 표명했다.',
   },
   {
-    headline: 'Immigration Policy Reform Expected',
-    subhead: 'Federal government announces new framework for skilled worker visas',
-    body: [
-      'The Biden administration unveiled a comprehensive reform package for the H-1B and other',
-      'skilled worker visa programs on Monday, marking the most significant changes to the system',
-      'in over a decade.',
-      '',
-      'The proposed changes would streamline the application process, increase annual visa caps,',
-      'and provide new pathways for international students graduating from U.S. universities.',
-      '',
-      '"These reforms recognize the vital contributions that skilled immigrants make to our economy,"',
-      'said the Secretary of Homeland Security during a press briefing at the White House.',
-      '',
-      'Korean American business leaders have welcomed the announcement, noting that many Korean',
-      'companies operating in the United States rely on the H-1B program to bring skilled workers.',
-      '',
-      'The Korean Embassy in Washington issued a statement expressing support for the reforms,',
-      'calling them "a positive step toward a more efficient and fair immigration system."',
-    ],
+    headline: '연방정부 이민정책 개혁안 발표',
+    subhead: 'H-1B 등 전문직 비자 프레임워크 대폭 변경',
+    body: '바이든 행정부가 월요일 H-1B 및 기타 전문직 비자 프로그램에 대한 포괄적 개혁안을 공개했다. 이는 10여 년 만에 가장 큰 규모의 변화다.\n\n개정안은 신청 절차 간소화, 연간 비자 발급 한도 확대, 미국 대학 졸업 유학생을 위한 새로운 경로 제공 등을 포함한다.\n\n국토안보부 장관은 백악관 브리핑에서 "이번 개혁은 숙련된 이민자들이 우리 경제에 기여하는 핵심적 역할을 인정한 것"이라고 밝혔다.\n\n한인 기업인들은 미국 내 한국 기업 다수가 H-1B 프로그램에 의존하고 있다며 이번 발표를 환영했다.',
   },
   {
-    headline: 'Small Business Program Expands',
-    subhead: 'New SBA initiative targets Korean American entrepreneurs in DMV region',
-    body: [
-      'The U.S. Small Business Administration announced a targeted expansion of its lending and',
-      'mentorship programs for Korean American small business owners in the D.C., Maryland, and',
-      'Virginia metropolitan area.',
-      '',
-      'The program, which launches next month, will provide low-interest loans of up to $250,000',
-      'and pair new business owners with experienced Korean American entrepreneurs as mentors.',
-      '',
-      '"Korean Americans are among the most entrepreneurial communities in the country," said the',
-      'SBA Regional Administrator. "This program recognizes their contributions and helps them grow."',
-      '',
-      'According to the latest census data, Korean Americans own over 12,000 businesses in the',
-      'greater D.C. area, employing more than 45,000 workers across various industries including',
-      'restaurants, dry cleaning, construction, and technology.',
-    ],
+    headline: '한인 자영업자 지원 프로그램 확대',
+    subhead: 'SBA, DMV 지역 한인 사업자 대상 저금리 대출·멘토링',
+    body: '미국 중소기업청(SBA)이 D.C., 메릴랜드, 버지니아 광역 지역 한인 자영업자를 위한 대출 및 멘토링 프로그램 확대를 발표했다.\n\n다음 달 시작되는 이 프로그램은 최대 25만 달러의 저금리 대출을 제공하고, 경험 많은 한인 사업가와 신규 사업자를 짝지어 멘토링을 제공한다.\n\nSBA 지역 관리자는 "한인은 미국에서 가장 기업가 정신이 강한 커뮤니티 중 하나"라며 "이 프로그램이 그들의 성장을 지원할 것"이라고 말했다.\n\n최신 인구조사에 따르면 D.C. 광역 지역에 한인 소유 사업체는 1만2천여 개, 고용 인원은 4만5천명 이상이다.',
   },
   {
-    headline: 'DMV Housing Market Report Q2 2026',
-    subhead: 'Median home prices rise 8% year-over-year across the metropolitan area',
-    body: [
-      'The real estate market in the Washington D.C. metropolitan area continued its upward trend',
-      'in the second quarter of 2026, with median home prices reaching $625,000 across the region.',
-      '',
-      'Fairfax County, home to a large Korean American community, saw prices increase by 9.2%,',
-      'with the average single-family home now selling for $720,000.',
-      '',
-      'Korean American real estate agents report strong demand from first-generation immigrants',
-      'seeking homes in areas with established Korean communities, particularly in Annandale,',
-      'Centreville, and Ellicott City.',
-      '',
-      '"Buyers are looking for neighborhoods with Korean grocery stores, restaurants, and churches',
-      'nearby," said Park Ji-young of Century 21 in Annandale. "These amenities drive housing',
-      'demand in certain zip codes."',
-    ],
+    headline: 'DMV 지역 부동산 시장 동향 보고서',
+    subhead: '중간 주택 가격 전년 대비 8% 상승... 62만5천 달러',
+    body: '워싱턴 D.C. 광역 부동산 시장이 2026년 2분기에도 상승세를 이어갔다. 지역 전체 중간 주택 가격은 62만5천 달러에 달했다.\n\n대규모 한인 커뮤니티가 있는 페어팩스 카운티는 9.2% 가격 상승을 기록했으며, 단독주택 평균 매매가는 72만 달러에 이른다.\n\n한인 부동산 에이전트들은 1세대 이민자들이 한인 커뮤니티가 형성된 지역의 주택을 선호한다고 전했다. 애난데일, 센터빌, 엘리콧시티 등이 대표적이다.',
   },
   {
-    headline: 'Youth Leadership Camp Applications',
-    subhead: 'CKA Fellowship program sees record number of applicants',
-    body: [
-      'The Council of Korean Americans (CKA) announced that its 2026 Next Generation Leadership',
-      'Fellowship has received a record 450 applications, more than double last year\'s numbers.',
-      '',
-      'The fellowship, now in its eighth year, selects 25 emerging Korean American leaders ages',
-      '21-35 for an intensive summer program that includes policy seminars, leadership training,',
-      'and meetings with senior government officials and business leaders.',
-      '',
-      '"The growing interest reflects the Korean American community\'s increasing engagement in',
-      'public service and civic leadership," said CKA President Abraham Kim.',
-      '',
-      'Past fellows have gone on to serve in government positions, lead nonprofit organizations,',
-      'and launch successful businesses that serve the Korean American community.',
-    ],
+    headline: '한인 청소년 리더십 캠프 모집',
+    subhead: 'CKA 차세대 리더십 펠로우십, 역대 최다 450명 지원',
+    body: '미주한인위원회(CKA)는 2026 차세대 리더십 펠로우십에 역대 최다인 450명이 지원했다고 발표했다. 지난해의 두 배 이상이다.\n\n8년차를 맞은 이 펠로우십은 21~35세의 떠오르는 한인 리더 25명을 선발해 정책 세미나, 리더십 교육, 고위 정부 관계자 및 기업인과의 만남 등 집중 여름 프로그램을 제공한다.\n\nCKA 회장 에이브러햄 김 씨는 "증가하는 관심은 한인사회의 공공서비스와 시민 리더십 참여가 늘고 있음을 반영한다"고 말했다.',
   },
   {
-    headline: 'Weather: Clear Skies This Week',
-    subhead: 'National Weather Service forecasts sunny conditions for D.C. metro area',
-    body: [
-      'Residents of the Washington D.C. metropolitan area can expect a stretch of pleasant weather',
-      'this week, with clear skies and temperatures in the mid-70s through Friday.',
-      '',
-      'The National Weather Service forecast calls for sunshine and low humidity, making it ideal',
-      'conditions for outdoor activities. Weekend temperatures may climb into the low 80s.',
-      '',
-      'Local Korean community organizations are taking advantage of the weather to hold several',
-      'outdoor events, including the Korean American Golf Association tournament at Congressional',
-      'Country Club and the annual Korean American Hiking Club spring outing at Great Falls.',
-    ],
+    headline: '이번 주 워싱턴 날씨 맑음 지속',
+    subhead: '국립기상청, D.C. 지역 금요일까지 쾌청한 날씨 예보',
+    body: '워싱턴 D.C. 광역 지역 주민들은 이번 주 화창한 날씨를 기대할 수 있다. 금요일까지 맑은 하늘에 25도 내외의 기온이 이어질 전망이다.\n\n국립기상청 예보에 따르면 햇살과 낮은 습도가 계속되어 야외 활동에 이상적인 조건이다. 주말에는 기온이 약 30도까지 올라갈 수 있다.\n\n지역 한인 단체들은 좋은 날씨를 활용해 한인 골프대회, 등산 모임 등 다양한 야외 행사를 개최할 예정이다.',
   },
   {
-    headline: 'Korea-US Economic Forum Success',
-    subhead: 'Bilateral trade discussions yield new investment commitments',
-    body: [
-      'The 2026 Korea-US Economic Cooperation Forum concluded successfully in Washington D.C.',
-      'last week, with over 200 business leaders and government officials from both countries',
-      'participating in three days of discussions.',
-      '',
-      'Key outcomes included $2.3 billion in new investment commitments from Korean companies',
-      'in the United States, primarily in semiconductor manufacturing, electric vehicle batteries,',
-      'and renewable energy sectors.',
-      '',
-      'Korean Ambassador to the United States Cho Hyun-dong called the forum "a milestone in',
-      'bilateral economic relations" and emphasized the deepening integration of the two economies.',
-    ],
+    headline: '한미 경제 협력 포럼 성공적 폐막',
+    subhead: '23억 달러 신규 투자 약속... 반도체·배터리 분야 집중',
+    body: '2026 한미 경제협력 포럼이 워싱턴 D.C.에서 성공적으로 마무리됐다. 양국 기업인과 정부 관계자 200여 명이 3일간 논의에 참여했다.\n\n주요 성과로 한국 기업들의 미국 내 23억 달러 규모 신규 투자 약속이 이뤄졌다. 반도체, 전기차 배터리, 신재생 에너지 분야가 중심이다.\n\n조현동 주미대사는 포럼을 "양국 경제 관계의 이정표"라 평가하며 양국 경제의 심화되는 통합을 강조했다.',
   },
   {
-    headline: 'Maryland Community Center Opens',
-    subhead: 'New $15M Korean American community facility in Ellicott City',
-    body: [
-      'Maryland Governor Wes Moore joined Korean American community leaders on Saturday to cut',
-      'the ribbon on the new Korean American Community Center in Ellicott City, Howard County.',
-      '',
-      'The $15 million facility features a 500-seat auditorium, a Korean language library, meeting',
-      'rooms, a commercial kitchen for community events, and office space for Korean American',
-      'nonprofit organizations.',
-      '',
-      '"This center will serve as a hub for our community for generations to come," said center',
-      'director Lee Myung-ja. "It represents years of fundraising and planning by dedicated',
-      'community volunteers."',
-    ],
+    headline: '메릴랜드 한인 커뮤니티 센터 개관',
+    subhead: '엘리콧시티에 1500만 달러 규모 시설... 웨스 무어 주지사 참석',
+    body: '메릴랜드주 웨스 무어 주지사가 토요일 하워드 카운티 엘리콧시티에 새로 건립된 한인 커뮤니티 센터 개관식에 참석했다.\n\n1500만 달러 규모의 이 시설은 500석 강당, 한국어 도서관, 회의실, 커뮤니티 행사용 주방, 한인 비영리 단체 사무 공간을 갖추고 있다.\n\n센터 관장 이명자 씨는 "이 센터는 앞으로 여러 세대에 걸쳐 우리 커뮤니티의 거점이 될 것"이라며 "헌신적인 커뮤니티 자원봉사자들의 수년간 모금과 계획의 결과"라고 말했다.',
   },
   {
-    headline: 'Virginia Korean Schools Expand',
-    subhead: 'Weekend Korean language programs add new locations and curricula',
-    body: [
-      'Korean language schools across Northern Virginia are expanding their programs in response',
-      'to growing demand from both Korean American families and non-Korean students interested',
-      'in learning the language.',
-      '',
-      'The Washington Korean School, the largest in the area, announced it will open two new',
-      'satellite locations in Ashburn and Woodbridge starting in the fall semester.',
-      '',
-      '"We\'re seeing unprecedented interest in Korean language education, partly driven by the',
-      'global popularity of Korean entertainment and culture," said principal Choi Eun-sook.',
-    ],
+    headline: '버지니아 한글학교 수업 확대',
+    subhead: '한국어 교육 수요 급증... 애쉬번·우드브릿지 신규 캠퍼스',
+    body: '북부 버지니아 전역의 한글학교들이 한인 가정과 비한인 학생 모두의 증가하는 수요에 대응해 프로그램을 확대하고 있다.\n\n지역 최대 규모인 워싱턴 한글학교는 올 가을부터 애쉬번과 우드브릿지에 두 곳의 신규 캠퍼스를 개설한다고 발표했다.\n\n최은숙 교장은 "한국 엔터테인먼트와 문화의 세계적 인기에 힘입어 한국어 교육에 대한 관심이 전례 없이 높아지고 있다"고 전했다.',
   },
 ];
 
-// 내부 페이지 기사들
+// 내부 페이지 기사
 const SECTION_ARTICLES = {
-  'Local News': [
-    { title: 'Annandale Business District Renovation Plan Approved', body: 'The Fairfax County Board of Supervisors unanimously approved a $45 million renovation plan for the Annandale business district, which is home to one of the largest concentrations of Korean businesses on the East Coast. The project will include streetscape improvements, new parking facilities, and pedestrian-friendly walkways.' },
-    { title: 'Korean Senior Center Celebrates 20th Anniversary', body: 'The Korean American Senior Citizens Center in Falls Church marked its 20th anniversary with a special celebration attended by over 300 community members. The center provides daily meals, health screenings, social activities, and transportation services to more than 500 Korean American seniors in the region.' },
+  '지역뉴스': [
+    { title: '애난데일 상업지구 리노베이션 계획 승인', body: '페어팩스 카운티 의회가 동부 최대 한인 상권인 애난데일 상업지구의 4500만 달러 규모 리노베이션 계획을 만장일치로 승인했다. 이 프로젝트는 거리 환경 개선, 새 주차 시설, 보행자 친화적 보도 조성을 포함한다. 공사는 내년 상반기에 시작될 예정이며, 지역 한인 사업체들의 영업에 미치는 영향을 최소화하기 위한 단계적 시공이 계획되어 있다.' },
+    { title: '한인 노인복지관 개관 20주년 기념', body: '폴스처치의 한인 노인복지관이 20주년 기념행사를 개최했다. 300여 명의 지역 주민이 참석한 가운데 열린 이번 행사에서는 그간의 활동을 되돌아보는 시간이 마련됐다. 복지관은 500여 명의 한인 시니어에게 매일 식사, 건강 검진, 사회 활동, 교통 서비스를 제공하고 있다.' },
   ],
-  'Economy': [
-    { title: 'Korean Banks Expand D.C. Area Operations', body: 'Several major Korean banks, including Shinhan and Woori, announced plans to expand their branch networks in the Washington D.C. metropolitan area. The expansion targets the growing Korean American business community and reflects increasing trade between Korea and the United States.' },
-    { title: 'Stock Market Recap: Korean Tech Stocks Lead', body: 'Korean technology companies listed on U.S. exchanges showed strong gains this week, led by Samsung Electronics ADRs which rose 3.2%. Analysts attribute the gains to strong semiconductor demand and favorable currency movements.' },
+  '경제': [
+    { title: '한국계 은행, D.C. 지역 영업 확대', body: '신한은행, 우리은행 등 주요 한국계 은행들이 워싱턴 D.C. 광역 지역 지점 네트워크 확대 계획을 발표했다. 이번 확장은 성장하는 한인 비즈니스 커뮤니티를 겨냥한 것으로, 한미 간 증가하는 교역량을 반영한다. 새 지점은 센터빌과 엘리콧시티에 각각 올해 3분기와 4분기에 개설될 예정이다.' },
+    { title: '증시 리캡: 한국 테크 주식 강세', body: '미국 거래소에 상장된 한국 기술 기업들이 이번 주 강세를 보였다. 삼성전자 ADR이 3.2% 상승하며 상승세를 주도했다. 애널리스트들은 반도체 수요 호조와 유리한 환율 변동을 상승 요인으로 꼽았다. SK하이닉스와 LG에너지솔루션도 각각 2.1%, 1.8% 올랐다.' },
   ],
-  'Society': [
-    { title: 'Korean Church Coalition Launches Food Bank Initiative', body: 'A coalition of 15 Korean churches in the D.C. metro area has launched a community food bank to serve families in need. The initiative, called "Sharing Table," will distribute groceries every Saturday at three locations across Northern Virginia and Maryland.' },
-    { title: 'Anti-Asian Hate Crime Task Force Reports Progress', body: 'The FBI\'s Anti-Asian Hate Crime Task Force reported a 30% decrease in reported incidents in the D.C. metropolitan area compared to last year. Community leaders credit increased police patrols, bystander intervention training, and stronger community-law enforcement partnerships.' },
+  '사회': [
+    { title: '한인 교회 연합, 푸드뱅크 사업 개시', body: 'D.C. 광역 지역 15개 한인 교회 연합이 도움이 필요한 가정을 위한 커뮤니티 푸드뱅크를 시작했다. "나눔의 식탁"이라 명명된 이 사업은 매주 토요일 북부 버지니아와 메릴랜드 3곳에서 식료품을 배분한다. 첫 배분 행사에 200여 가정이 참여했으며, 월 평균 500가정 지원을 목표로 하고 있다.' },
+    { title: '반아시안 혐오범죄 태스크포스 성과', body: 'FBI 반아시안 혐오범죄 태스크포스가 D.C. 광역 지역의 신고 건수가 전년 대비 30% 감소했다고 보고했다. 커뮤니티 지도자들은 강화된 경찰 순찰, 방관자 개입 교육, 커뮤니티-법 집행기관 간 파트너십 강화를 그 원인으로 꼽았다.' },
   ],
-  'Culture': [
-    { title: 'Korean Film Festival Opens at Kennedy Center', body: 'The 12th annual Korean Film Festival opened at the Kennedy Center with a screening of the latest critically acclaimed Korean drama. The week-long festival features 20 films, panel discussions with filmmakers, and a special retrospective on Korean cinema history.' },
-    { title: 'K-Pop Concert at Capital One Arena Sells Out', body: 'A major K-pop group\'s concert at Capital One Arena in Washington D.C. sold out within minutes of tickets going on sale. The show, part of the group\'s North American tour, is expected to draw fans from across the East Coast.' },
+  '문화': [
+    { title: '케네디센터 한국영화제 개막', body: '제12회 한국영화제가 케네디센터에서 최신 화제작 상영으로 개막했다. 일주일간 진행되는 이번 영화제에서는 20편의 영화가 상영되며, 영화감독과의 패널 토론, 한국 영화사 특별 회고전 등이 마련된다. 올해는 특히 젊은 감독들의 작품이 다수 선정되어 주목받고 있다.' },
+    { title: '캐피털원 아레나 K-팝 콘서트 매진', body: '워싱턴 D.C. 캐피털원 아레나에서 열리는 대형 K-팝 그룹의 콘서트가 티켓 판매 시작 수 분 만에 매진됐다. 북미 투어의 일환인 이번 공연은 동부 전역에서 팬들이 모일 것으로 예상된다. 주최 측은 추가 공연 검토 중이라고 밝혔다.' },
   ],
-  'Education': [
-    { title: 'Korean SAT Prep Academy Opens in Centreville', body: 'A new SAT and college preparation academy targeting Korean American students has opened in Centreville, Virginia. The academy offers intensive test preparation courses, college admissions counseling, and essay writing workshops in both Korean and English.' },
-    { title: 'University of Maryland Launches Korean Studies Program', body: 'The University of Maryland announced a new Korean Studies minor program starting in the fall 2026 semester. The program will offer courses in Korean language, history, politics, and culture, and will include a study abroad component with partner universities in Seoul.' },
+  '교육': [
+    { title: '센터빌에 한인 SAT 학원 개원', body: '버지니아 센터빌에 한인 학생 대상 SAT 및 대학입시 준비 학원이 새로 문을 열었다. 이 학원은 집중 시험 준비 과정, 대학 입학 상담, 한영 이중 언어 에세이 작성 워크숍을 제공한다. 원장은 "한인 학생들의 특성에 맞는 맞춤형 교육을 제공하겠다"고 밝혔다.' },
+    { title: '메릴랜드대, 한국학 프로그램 신설', body: '메릴랜드대학교가 2026년 가을 학기부터 한국학 부전공 프로그램을 신설한다고 발표했다. 한국어, 역사, 정치, 문화 과목을 제공하며, 서울 소재 파트너 대학과의 교환학생 프로그램도 포함된다. 개설 첫 해 30명의 학생을 모집할 계획이다.' },
   ],
-  'Living': [
-    { title: 'Best Korean Restaurants in DMV: 2026 Guide', body: 'Our annual guide to the best Korean dining in the D.C., Maryland, and Virginia area features 25 must-visit restaurants, from traditional Korean BBQ spots in Annandale to trendy fusion restaurants in downtown D.C. New additions include a temple food restaurant in Bethesda and a Korean fried chicken chain in Arlington.' },
-    { title: 'Health Insurance Guide for Korean Immigrants', body: 'Navigating the U.S. health insurance system can be challenging for Korean immigrants. This comprehensive guide covers Medicare, Medicaid, and Marketplace options available in Virginia, Maryland, and D.C., with Korean-language enrollment assistance resources.' },
+  '생활': [
+    { title: 'DMV 한식당 베스트 25선 2026', body: 'D.C., 메릴랜드, 버지니아 지역 최고의 한식당 25곳을 선정했다. 애난데일의 전통 한우 불고기 전문점부터 D.C. 다운타운의 퓨전 레스토랑까지 다양하다. 올해 새로 선정된 곳으로는 베데스다의 사찰음식점과 알링턴의 한국식 치킨 체인이 있다. 각 식당의 대표 메뉴와 가격대, 예약 정보를 상세히 안내한다.' },
+    { title: '한인 이민자를 위한 건강보험 가이드', body: '미국 건강보험 제도는 한인 이민자들에게 복잡할 수 있다. 이 종합 가이드는 버지니아, 메릴랜드, D.C.에서 이용 가능한 메디케어, 메디케이드, 마켓플레이스 옵션을 다루며, 한국어 등록 지원 자원도 안내한다. 올해부터 달라진 보험료 지원 기준도 상세히 설명한다.' },
   ],
-  'Opinion': [
-    { title: 'Editorial: Strengthening Korean American Civic Participation', body: 'As the Korean American community continues to grow in the Washington D.C. area, civic participation must grow alongside it. Voter registration rates among Korean Americans remain below the national average. Community organizations must redouble their efforts to engage Korean Americans in the democratic process.' },
-    { title: 'Column: Bridging the Generation Gap in Korean Families', body: 'The cultural and linguistic divide between first-generation Korean immigrants and their American-born children remains one of the most significant challenges facing Korean American families. Finding ways to bridge this gap while preserving cultural heritage requires intentional effort from both generations.' },
+  '오피니언': [
+    { title: '[사설] 한인의 시민참여를 높이자', body: '워싱턴 D.C. 지역 한인사회가 계속 성장하는 가운데, 시민참여도 함께 커져야 한다. 한인의 유권자 등록률은 여전히 전국 평균 이하다. 커뮤니티 단체들은 한인들의 민주적 과정 참여를 위한 노력을 배가해야 한다. 특히 젊은 세대의 투표 참여를 독려하는 프로그램이 시급하다.' },
+    { title: '[칼럼] 한인 가정의 세대 간 다리 놓기', body: '1세대 한인 이민자와 미국에서 태어난 자녀 사이의 문화적·언어적 격차는 한인 가정이 직면한 가장 큰 도전 중 하나다. 문화유산을 보존하면서 이 격차를 좁히는 길을 찾으려면 양 세대 모두의 의식적인 노력이 필요하다. 가정 내 한국어 사용, 함께하는 문화 활동이 중요한 첫걸음이다.' },
   ],
-  'Sports': [
-    { title: 'Korean American Golf Tournament Results', body: 'The Mid-Atlantic Korean American Golf Association held its spring tournament at Westfields Golf Club in Clifton, Virginia. Over 120 golfers participated in the two-day event, with Lee Dong-won taking the championship title with a combined score of 142.' },
-    { title: 'Local Korean Youth Soccer League Kicks Off Season', body: 'The Northern Virginia Korean Youth Soccer League began its spring season with 24 teams competing across four age divisions. The league, now in its 15th year, has grown from a small weekend program to a comprehensive youth athletics organization.' },
+  '스포츠': [
+    { title: '한인 골프대회 결과', body: '중부대서양 한인 골프협회가 버지니아 클리프턴의 웨스트필즈 골프클럽에서 봄 시즌 토너먼트를 개최했다. 120여 명의 골퍼가 이틀간 경기에 참가했으며, 이동원 씨가 합산 142타로 챔피언십 타이틀을 획득했다. 여성부에서는 박서연 씨가 우승을 차지했다.' },
+    { title: '한인 유소년 축구리그 시즌 개막', body: '북부 버지니아 한인 유소년 축구리그가 봄 시즌을 개막했다. 4개 연령 디비전에 24개 팀이 경쟁한다. 15년차를 맞은 이 리그는 소규모 주말 프로그램에서 종합 유소년 스포츠 단체로 성장했다. 올해부터 U-8 디비전이 신설되어 더 어린 선수들도 참가할 수 있게 됐다.' },
   ],
 };
 
+const SECTION_NAMES_KO = Object.keys(SECTION_ARTICLES);
+
+// 텍스트 줄바꿈 유틸
+function wrapText(text, font, fontSize, maxWidth) {
+  const lines = [];
+  const paragraphs = text.split('\n');
+  for (const para of paragraphs) {
+    if (para === '') { lines.push(''); continue; }
+    const words = para.split('');
+    let line = '';
+    for (const char of words) {
+      const test = line + char;
+      if (font.widthOfTextAtSize(test, fontSize) > maxWidth) {
+        lines.push(line);
+        line = char;
+      } else {
+        line = test;
+      }
+    }
+    if (line) lines.push(line);
+  }
+  return lines;
+}
+
 async function createPdf(date, editionCode, editionLabel, pageNum, totalPages) {
   const doc = await PDFDocument.create();
+  doc.registerFontkit(fontkit);
+
+  const fontR = await doc.embedFont(fontRegularBytes);
+  const fontB = await doc.embedFont(fontBoldBytes);
+
+  // 이미지 임베드
+  const imgIdx = (date.getDate() + pageNum) % imageBuffers.length;
+  let embeddedImg = null;
+  try {
+    embeddedImg = await doc.embedJpg(imageBuffers[imgIdx]);
+  } catch { /* skip */ }
+
   const page = doc.addPage([595.28, 841.89]); // A4
-  const font = await doc.embedFont(StandardFonts.TimesRoman);
-  const fontBold = await doc.embedFont(StandardFonts.TimesRomanBold);
-  const fontItalic = await doc.embedFont(StandardFonts.TimesRomanItalic);
-  const helvetica = await doc.embedFont(StandardFonts.Helvetica);
-  const helveticaBold = await doc.embedFont(StandardFonts.HelveticaBold);
   const { width, height } = page.getSize();
 
-  const dateStr = date.toISOString().split('T')[0];
-  const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const dayName = weekdays[date.getDay()];
-  const monthName = months[date.getMonth()];
-  const formattedDate = `${dayName}, ${monthName} ${date.getDate()}, ${date.getFullYear()}`;
+  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+  const dateStr = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${weekdays[date.getDay()]})`;
 
-  // ===== 상단 마스트헤드 =====
-  // 빨간 상단 라인
+  const mL = 35;
+  const mR = width - 35;
+  const cW = mR - mL;
+
+  // ===== 마스트헤드 =====
   page.drawRectangle({ x: 0, y: height - 4, width, height: 4, color: rgb(0.78, 0.06, 0.18) });
 
-  // 신문 제목
-  page.drawText('The JoongAng Daily', {
-    x: width / 2 - 120, y: height - 40, size: 30, font: fontBold, color: rgb(0, 0, 0),
-  });
-  page.drawText('WASHINGTON D.C. EDITION', {
-    x: width / 2 - 72, y: height - 55, size: 10, font: helvetica, color: rgb(0.4, 0.4, 0.4),
-  });
+  page.drawText('중앙일보', { x: width / 2 - 55, y: height - 42, size: 30, font: fontB, color: rgb(0, 0, 0) });
+  page.drawText('WASHINGTON D.C.', { x: width / 2 - 48, y: height - 56, size: 9, font: fontR, color: rgb(0.45, 0.45, 0.45) });
 
-  // 날짜/판 정보
-  page.drawText(formattedDate, {
-    x: 30, y: height - 55, size: 9, font, color: rgb(0.3, 0.3, 0.3),
-  });
-  page.drawText(`${editionLabel}  |  Page ${pageNum}`, {
-    x: width - 150, y: height - 55, size: 9, font, color: rgb(0.3, 0.3, 0.3),
-  });
+  page.drawText(dateStr, { x: mL, y: height - 56, size: 9, font: fontR, color: rgb(0.35, 0.35, 0.35) });
+  page.drawText(`${editionLabel}  |  ${pageNum}면`, { x: mR - 80, y: height - 56, size: 9, font: fontR, color: rgb(0.35, 0.35, 0.35) });
 
-  // 구분선
-  page.drawLine({
-    start: { x: 30, y: height - 62 }, end: { x: width - 30, y: height - 62 },
-    thickness: 1.5, color: rgb(0, 0, 0),
-  });
-  page.drawLine({
-    start: { x: 30, y: height - 65 }, end: { x: width - 30, y: height - 65 },
-    thickness: 0.5, color: rgb(0, 0, 0),
-  });
-
-  const marginLeft = 35;
-  const marginRight = width - 35;
-  const contentWidth = marginRight - marginLeft;
+  page.drawLine({ start: { x: mL, y: height - 63 }, end: { x: mR, y: height - 63 }, thickness: 1.5, color: rgb(0, 0, 0) });
+  page.drawLine({ start: { x: mL, y: height - 66 }, end: { x: mR, y: height - 66 }, thickness: 0.5, color: rgb(0, 0, 0) });
 
   if (pageNum === 1) {
     // ===== 1면 =====
     const fp = FRONT_PAGES[(date.getDate() - 1) % FRONT_PAGES.length];
-    let y = height - 100;
+    let y = height - 95;
 
     // 헤드라인
-    const headlineSize = 32;
-    page.drawText(fp.headline, {
-      x: marginLeft, y, size: headlineSize, font: fontBold, color: rgb(0, 0, 0),
-    });
-    y -= 22;
+    const hlLines = wrapText(fp.headline, fontB, 28, cW);
+    for (const line of hlLines) {
+      page.drawText(line, { x: mL, y, size: 28, font: fontB, color: rgb(0, 0, 0) });
+      y -= 34;
+    }
 
     // 부제목
-    page.drawText(fp.subhead, {
-      x: marginLeft, y, size: 14, font: fontItalic, color: rgb(0.3, 0.3, 0.3),
-    });
-    y -= 20;
+    const shLines = wrapText(fp.subhead, fontR, 13, cW);
+    for (const line of shLines) {
+      page.drawText(line, { x: mL, y, size: 13, font: fontR, color: rgb(0.3, 0.3, 0.3) });
+      y -= 17;
+    }
+    y -= 5;
 
-    // 구분선
-    page.drawLine({
-      start: { x: marginLeft, y }, end: { x: marginRight, y },
-      thickness: 0.5, color: rgb(0.7, 0.7, 0.7),
-    });
-    y -= 8;
+    page.drawLine({ start: { x: mL, y }, end: { x: mR, y }, thickness: 0.5, color: rgb(0.75, 0.75, 0.75) });
+    y -= 12;
 
-    // 기자명
-    page.drawText('By Staff Reporter  |  joongang@dreamitbiz.com', {
-      x: marginLeft, y, size: 9, font: fontItalic, color: rgb(0.5, 0.5, 0.5),
-    });
-    y -= 20;
-
-    // 이미지 자리 (회색 박스)
-    const imgHeight = 180;
-    page.drawRectangle({
-      x: marginLeft, y: y - imgHeight, width: contentWidth, height: imgHeight,
-      color: rgb(0.93, 0.93, 0.93), borderColor: rgb(0.85, 0.85, 0.85), borderWidth: 0.5,
-    });
-    page.drawText('Photo / Yonhap News Agency', {
-      x: width / 2 - 70, y: y - imgHeight / 2, size: 11, font: fontItalic, color: rgb(0.6, 0.6, 0.6),
-    });
-    y -= imgHeight + 8;
-
-    // 캡션
-    page.drawText('The event drew thousands of attendees from across the D.C. metropolitan area.', {
-      x: marginLeft, y, size: 8, font: fontItalic, color: rgb(0.5, 0.5, 0.5),
-    });
+    page.drawText('워싱턴 | 중앙일보 취재팀', { x: mL, y, size: 9, font: fontR, color: rgb(0.5, 0.5, 0.5) });
     y -= 18;
 
+    // 이미지
+    if (embeddedImg) {
+      const imgH = 180;
+      const imgW = cW;
+      page.drawImage(embeddedImg, { x: mL, y: y - imgH, width: imgW, height: imgH });
+      y -= imgH + 6;
+      page.drawText('▲ 연합뉴스 제공', { x: mL, y, size: 8, font: fontR, color: rgb(0.5, 0.5, 0.5) });
+      y -= 16;
+    }
+
     // 본문 (2단)
-    const colWidth = (contentWidth - 16) / 2;
-    const colGap = 16;
-    let leftY = y;
-    let rightY = y;
-    const lineHeight = 13;
-    const bodySize = 10;
+    const colW = (cW - 14) / 2;
+    const bodyLines = wrapText(fp.body, fontR, 9.5, colW);
+    const half = Math.ceil(bodyLines.length / 2);
+    let ly = y, ry = y;
 
-    for (let i = 0; i < fp.body.length; i++) {
-      const line = fp.body[i];
-      if (line === '') {
-        if (i < fp.body.length / 2) leftY -= 8;
-        else rightY -= 8;
-        continue;
-      }
-
-      if (i < fp.body.length / 2) {
-        // 왼쪽 단
-        const words = line.split(' ');
-        let currentLine = '';
-        for (const word of words) {
-          const testLine = currentLine ? currentLine + ' ' + word : word;
-          if (font.widthOfTextAtSize(testLine, bodySize) > colWidth) {
-            page.drawText(currentLine, { x: marginLeft, y: leftY, size: bodySize, font, color: rgb(0.15, 0.15, 0.15) });
-            leftY -= lineHeight;
-            currentLine = word;
-          } else {
-            currentLine = testLine;
-          }
-        }
-        if (currentLine) {
-          page.drawText(currentLine, { x: marginLeft, y: leftY, size: bodySize, font, color: rgb(0.15, 0.15, 0.15) });
-          leftY -= lineHeight;
-        }
+    for (let i = 0; i < bodyLines.length; i++) {
+      const line = bodyLines[i];
+      if (i < half) {
+        if (line === '') { ly -= 6; continue; }
+        page.drawText(line, { x: mL, y: ly, size: 9.5, font: fontR, color: rgb(0.12, 0.12, 0.12) });
+        ly -= 13;
       } else {
-        // 오른쪽 단
-        const words = line.split(' ');
-        let currentLine = '';
-        for (const word of words) {
-          const testLine = currentLine ? currentLine + ' ' + word : word;
-          if (font.widthOfTextAtSize(testLine, bodySize) > colWidth) {
-            page.drawText(currentLine, { x: marginLeft + colWidth + colGap, y: rightY, size: bodySize, font, color: rgb(0.15, 0.15, 0.15) });
-            rightY -= lineHeight;
-            currentLine = word;
-          } else {
-            currentLine = testLine;
-          }
-        }
-        if (currentLine) {
-          page.drawText(currentLine, { x: marginLeft + colWidth + colGap, y: rightY, size: bodySize, font, color: rgb(0.15, 0.15, 0.15) });
-          rightY -= lineHeight;
-        }
+        if (line === '') { ry -= 6; continue; }
+        page.drawText(line, { x: mL + colW + 14, y: ry, size: 9.5, font: fontR, color: rgb(0.12, 0.12, 0.12) });
+        ry -= 13;
       }
     }
 
     // 단 구분선
-    const colDividerTop = y + 5;
-    const colDividerBottom = Math.min(leftY, rightY) - 10;
     page.drawLine({
-      start: { x: marginLeft + colWidth + colGap / 2, y: colDividerTop },
-      end: { x: marginLeft + colWidth + colGap / 2, y: colDividerBottom },
-      thickness: 0.5, color: rgb(0.8, 0.8, 0.8),
+      start: { x: mL + colW + 7, y: y + 3 }, end: { x: mL + colW + 7, y: Math.min(ly, ry) - 5 },
+      thickness: 0.4, color: rgb(0.82, 0.82, 0.82),
     });
 
-    // 하단: 인덱스 박스
-    const boxY = 50;
-    page.drawLine({
-      start: { x: marginLeft, y: boxY + 55 }, end: { x: marginRight, y: boxY + 55 },
-      thickness: 1, color: rgb(0, 0, 0),
-    });
-    page.drawText('INSIDE THIS EDITION', {
-      x: marginLeft, y: boxY + 40, size: 10, font: helveticaBold, color: rgb(0.78, 0.06, 0.18),
-    });
-    const sections = ['Local News....2', 'Economy....3', 'Society....4', 'Culture....5', 'Opinion....6', 'Sports....7'];
-    sections.forEach((s, i) => {
-      const sx = marginLeft + (i % 3) * (contentWidth / 3);
-      const sy = boxY + (i < 3 ? 25 : 10);
-      page.drawText(s, { x: sx, y: sy, size: 9, font, color: rgb(0.3, 0.3, 0.3) });
+    // 하단 목차
+    page.drawLine({ start: { x: mL, y: 65 }, end: { x: mR, y: 65 }, thickness: 1, color: rgb(0, 0, 0) });
+    page.drawText('오늘의 지면', { x: mL, y: 50, size: 10, font: fontB, color: rgb(0.78, 0.06, 0.18) });
+    const toc = ['지역뉴스....2면', '경제....3면', '사회....4면', '문화....5면', '오피니언....6면', '스포츠....7면'];
+    toc.forEach((s, i) => {
+      page.drawText(s, { x: mL + (i % 3) * (cW / 3), y: i < 3 ? 35 : 20, size: 9, font: fontR, color: rgb(0.3, 0.3, 0.3) });
     });
 
   } else {
     // ===== 내부 페이지 =====
-    const sectionNames = Object.keys(SECTION_ARTICLES);
-    const sectionName = sectionNames[(pageNum - 2) % sectionNames.length];
-    const articles = SECTION_ARTICLES[sectionName];
-
-    // 섹션 제목
+    const secName = SECTION_NAMES_KO[(pageNum - 2) % SECTION_NAMES_KO.length];
+    const articles = SECTION_ARTICLES[secName];
     let y = height - 85;
-    page.drawRectangle({
-      x: marginLeft, y: y - 2, width: contentWidth, height: 18,
-      color: rgb(0.78, 0.06, 0.18),
-    });
-    page.drawText(sectionName.toUpperCase(), {
-      x: marginLeft + 8, y: y + 1, size: 11, font: helveticaBold, color: rgb(1, 1, 1),
-    });
-    page.drawText(`The JoongAng Daily  |  Page ${pageNum}`, {
-      x: marginRight - 160, y: y + 1, size: 9, font: helvetica, color: rgb(1, 1, 1),
-    });
-    y -= 30;
 
-    // 2단 레이아웃
-    const colWidth = (contentWidth - 20) / 2;
-    const colGap = 20;
+    // 섹션 바
+    page.drawRectangle({ x: mL, y: y - 3, width: cW, height: 20, color: rgb(0.78, 0.06, 0.18) });
+    page.drawText(secName, { x: mL + 8, y: y, size: 12, font: fontB, color: rgb(1, 1, 1) });
+    page.drawText(`중앙일보  |  ${pageNum}면`, { x: mR - 100, y: y, size: 9, font: fontR, color: rgb(1, 1, 1) });
+    y -= 32;
 
-    for (let artIdx = 0; artIdx < 2 && artIdx < articles.length; artIdx++) {
-      const article = articles[artIdx];
-      const cx = marginLeft + artIdx * (colWidth + colGap);
+    // 2단
+    const colW = (cW - 18) / 2;
+    for (let ai = 0; ai < 2 && ai < articles.length; ai++) {
+      const art = articles[ai];
+      const cx = mL + ai * (colW + 18);
       let ay = y;
 
       // 기사 제목
-      const titleWords = article.title.split(' ');
-      let titleLine = '';
-      const titleSize = 16;
-      for (const word of titleWords) {
-        const test = titleLine ? titleLine + ' ' + word : word;
-        if (fontBold.widthOfTextAtSize(test, titleSize) > colWidth) {
-          page.drawText(titleLine, { x: cx, y: ay, size: titleSize, font: fontBold, color: rgb(0, 0, 0) });
-          ay -= 20;
-          titleLine = word;
-        } else {
-          titleLine = test;
-        }
+      const titleLines = wrapText(art.title, fontB, 15, colW);
+      for (const line of titleLines) {
+        page.drawText(line, { x: cx, y: ay, size: 15, font: fontB, color: rgb(0, 0, 0) });
+        ay -= 19;
       }
-      if (titleLine) {
-        page.drawText(titleLine, { x: cx, y: ay, size: titleSize, font: fontBold, color: rgb(0, 0, 0) });
-        ay -= 14;
-      }
+      ay -= 2;
 
-      // 구분선
-      page.drawLine({
-        start: { x: cx, y: ay }, end: { x: cx + colWidth, y: ay },
-        thickness: 0.5, color: rgb(0.8, 0.8, 0.8),
-      });
+      page.drawLine({ start: { x: cx, y: ay }, end: { x: cx + colW, y: ay }, thickness: 0.4, color: rgb(0.8, 0.8, 0.8) });
       ay -= 12;
 
-      // 기자명
-      page.drawText('Staff Reporter', {
-        x: cx, y: ay, size: 8, font: fontItalic, color: rgb(0.5, 0.5, 0.5),
-      });
-      ay -= 16;
+      page.drawText('중앙일보 기자', { x: cx, y: ay, size: 8, font: fontR, color: rgb(0.5, 0.5, 0.5) });
+      ay -= 14;
 
-      // 이미지 자리
-      const imgH = 120;
-      page.drawRectangle({
-        x: cx, y: ay - imgH, width: colWidth, height: imgH,
-        color: rgb(0.94, 0.94, 0.94), borderColor: rgb(0.88, 0.88, 0.88), borderWidth: 0.5,
-      });
-      page.drawText('Photo', {
-        x: cx + colWidth / 2 - 15, y: ay - imgH / 2, size: 11, font: fontItalic, color: rgb(0.65, 0.65, 0.65),
-      });
-      ay -= imgH + 14;
+      // 이미지
+      if (embeddedImg) {
+        const iH = 110;
+        page.drawImage(embeddedImg, { x: cx, y: ay - iH, width: colW, height: iH });
+        ay -= iH + 10;
+      }
 
       // 본문
-      const bodyWords = article.body.split(' ');
-      let bodyLine = '';
-      const bSize = 9.5;
-      const bLineHeight = 12.5;
-      for (const word of bodyWords) {
-        const test = bodyLine ? bodyLine + ' ' + word : word;
-        if (font.widthOfTextAtSize(test, bSize) > colWidth) {
-          page.drawText(bodyLine, { x: cx, y: ay, size: bSize, font, color: rgb(0.15, 0.15, 0.15) });
-          ay -= bLineHeight;
-          bodyLine = word;
-        } else {
-          bodyLine = test;
-        }
-        if (ay < 80) break;
-      }
-      if (bodyLine && ay >= 80) {
-        page.drawText(bodyLine, { x: cx, y: ay, size: bSize, font, color: rgb(0.15, 0.15, 0.15) });
+      const bodyLines = wrapText(art.body, fontR, 9, colW);
+      for (const line of bodyLines) {
+        if (ay < 85) break;
+        if (line === '') { ay -= 5; continue; }
+        page.drawText(line, { x: cx, y: ay, size: 9, font: fontR, color: rgb(0.15, 0.15, 0.15) });
+        ay -= 12;
       }
     }
 
     // 단 구분선
     page.drawLine({
-      start: { x: marginLeft + colWidth + colGap / 2, y: y + 5 },
-      end: { x: marginLeft + colWidth + colGap / 2, y: 80 },
-      thickness: 0.5, color: rgb(0.85, 0.85, 0.85),
+      start: { x: mL + colW + 9, y: y + 3 }, end: { x: mL + colW + 9, y: 85 },
+      thickness: 0.4, color: rgb(0.85, 0.85, 0.85),
     });
 
     // 하단 광고
     page.drawRectangle({
-      x: marginLeft, y: 30, width: contentWidth, height: 45,
+      x: mL, y: 30, width: cW, height: 48,
       color: rgb(0.96, 0.96, 0.96), borderColor: rgb(0.88, 0.88, 0.88), borderWidth: 0.5,
     });
-    page.drawText('ADVERTISEMENT', {
-      x: width / 2 - 40, y: 48, size: 10, font: helvetica, color: rgb(0.7, 0.7, 0.7),
-    });
+    page.drawText('광 고', { x: width / 2 - 13, y: 48, size: 11, font: fontR, color: rgb(0.72, 0.72, 0.72) });
   }
 
-  // 하단 페이지 번호
-  page.drawLine({
-    start: { x: marginLeft, y: 22 }, end: { x: marginRight, y: 22 },
-    thickness: 0.5, color: rgb(0.8, 0.8, 0.8),
-  });
-  page.drawText(`${pageNum}`, {
-    x: width / 2 - 4, y: 10, size: 9, font: helveticaBold, color: rgb(0.4, 0.4, 0.4),
-  });
+  // 페이지 번호
+  page.drawLine({ start: { x: mL, y: 20 }, end: { x: mR, y: 20 }, thickness: 0.4, color: rgb(0.8, 0.8, 0.8) });
+  page.drawText(`${pageNum}`, { x: width / 2 - 4, y: 8, size: 9, font: fontB, color: rgb(0.4, 0.4, 0.4) });
 
   return await doc.save();
 }
 
 async function main() {
-  console.log('=== Storage PDF 업로드 (upsert) ===\n');
+  console.log('=== 한글 PDF 생성 + 업로드 ===\n');
 
-  let uploaded = 0;
-  let errors = 0;
+  let uploaded = 0, errors = 0;
 
   for (let d = new Date(START); d <= END; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toISOString().split('T')[0];
@@ -528,21 +328,20 @@ async function main() {
 
     for (const edition of editionsForDay) {
       const pageCount = edition.pages - (d.getDate() % 3 === 0 ? 2 : 0);
-      process.stdout.write(`[${dateStr}] ${edition.code} ${pageCount}p...`);
+      process.stdout.write(`[${dateStr}] ${edition.code} ${pageCount}면...`);
 
       for (let p = 1; p <= pageCount; p++) {
         const pdfBytes = await createPdf(d, edition.code, edition.label, p, pageCount);
         const fileName = `${edition.code}-${dateStr}-${String(p).padStart(2, '0')}.pdf`;
         const storagePath = `editions/${dateStr}/${edition.code}/${fileName}`;
 
-        // 기존 파일 삭제 후 새로 업로드
         await supabase.storage.from('joongang-editions').remove([storagePath]);
         const { error } = await supabase.storage
           .from('joongang-editions')
           .upload(storagePath, pdfBytes, { contentType: 'application/pdf' });
 
         if (error) {
-          process.stdout.write(` ERR(${p})`);
+          process.stdout.write(` X(${p})`);
           errors++;
         } else {
           uploaded++;
@@ -552,7 +351,7 @@ async function main() {
     }
   }
 
-  console.log(`\n=== Done: ${uploaded} uploaded, ${errors} errors ===`);
+  console.log(`\n=== 완료: ${uploaded}개 업로드, ${errors}개 오류 ===`);
 }
 
 main().catch(console.error);
