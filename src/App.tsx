@@ -37,6 +37,7 @@ import MemberManager from '@/pages/admin/members/MemberManager';
 import AdBilling from '@/pages/admin/ads/AdBilling';
 import VisitorStats from '@/pages/admin/VisitorStats';
 import EditionManager from '@/pages/admin/editions/EditionManager';
+import About from '@/pages/About';
 
 export default function App() {
   return (
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="search" element={<SearchPage />} />
         <Route path="tip" element={<TipPage />} />
         <Route path="edition" element={<EditionPage />} />
+        <Route path="about" element={<About />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="auth/callback" element={<AuthCallbackPage />} />

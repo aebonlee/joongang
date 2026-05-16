@@ -3,10 +3,10 @@ import type { ReactElement } from 'react';
 export default function About(): ReactElement {
   return (
     <>
-      <section className="page-header">
-        <div className="container">
-          <h1>About</h1>
-          <p>중앙일보 워싱턴</p>
+      <section style={{ background: '#1a237e', padding: '80px 0 40px', color: '#fff', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }}>
+          <h1 style={{ fontSize: '2rem', marginBottom: '8px' }}>About</h1>
+          <p style={{ opacity: 0.8 }}>중앙일보 워싱턴</p>
         </div>
       </section>
 
